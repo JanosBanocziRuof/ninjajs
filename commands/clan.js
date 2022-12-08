@@ -46,7 +46,8 @@ function memberChunks(members){
     return chunks
 }
 function singlePage(memsOnPage){
-    return memsOnPage.map(m=>`\`${m['name']}\` (${m['role']})`).join('\n')
+   if (!memsOnPage) return 'No members found'
+   return memsOnPage.map(m=>`\`${m['name']}\` (${m['role']})`).join('\n')
 }
 
 function navButtons(index, maxPage){
