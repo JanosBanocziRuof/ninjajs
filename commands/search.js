@@ -1,7 +1,6 @@
 const fetch  = require('node-fetch');
 const functions = require('../global-functions.js')
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed,  MessageAttachment } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder,  MessageAttachment } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -32,8 +31,8 @@ module.exports = {
             const response = await fetch(url);
             const data = await response.json();
             if (data['success'] != true) {
-                const error = new MessageEmbed()
-                    .setColor(interaction.guild.me.displayHexColor)
+                const error = new EmbedBuilder()
+                    .setColor(interaction.guild.members.me.displayHexColor)
                     .setTitle('Error')
                     .setDescription(data['error'])
                 await interaction.editReply({ embeds: [error] })
@@ -52,10 +51,10 @@ module.exports = {
                 if (len == 0) {
                     desc = 'No users found'
                 }
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setTitle(`Search results for \`${player}\``)
                     .setDescription(desc)
-                    .setColor(interaction.guild.me.displayHexColor)
+                    .setColor(interaction.guild.members.me.displayHexColor)
                 await interaction.editReply({ embeds: [embed] });
             }
         }
@@ -65,8 +64,8 @@ module.exports = {
             const response = await fetch(url);
             const data = await response.json();
             if (data['success'] != true) {
-                const error = new MessageEmbed()
-                    .setColor(interaction.guild.me.displayHexColor)
+                const error = new EmbedBuilder()
+                    .setColor(interaction.guild.members.me.displayHexColor)
                     .setTitle('Error')
                     .setDescription(data['error'])
                 await interaction.editReply({ embeds: [error] })
@@ -83,10 +82,10 @@ module.exports = {
                 for (let i = 0; i < len; i++) {
                     desc = desc + `\n\`${data['clans'][i]['name']}\` - ${data['clans'][i]['id']}`   //make sure it works once buizerd fixes the api
                 }*/
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setTitle(`Unsuccessful`)   //change to `Search results for \`${clan}\`` once buizerd fixes the api
                     .setDescription('Unavailable at the moment due to an API error') //change to desc once buizerd fixes the api
-                    .setColor(interaction.guild.me.displayHexColor)
+                    .setColor(interaction.guild.members.me.displayHexColor)
                 await interaction.editReply({ embeds: [embed] });
             }
         }

@@ -1,8 +1,7 @@
 const functions = require('../global-functions.js')
 
 const fetch  = require('node-fetch');
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 function getServers(version) {
     return fetch("https://api.ninja.io/server", {headers: { 'Client-Version': version }})
@@ -41,8 +40,8 @@ module.exports = {
         const a = await functions.getGameVersion()
         const servers = await getServers(a)
         const b = fieldBuilder(servers, servers['servers'].length)
-		const serversEM = new MessageEmbed()
-            .setColor(interaction.guild.me.displayHexColor)
+		const serversEM = new EmbedBuilder()
+            .setColor(interaction.guild.members.me.displayHexColor)
             .setTitle(`**${servers['servers'].length} Servers Are Online**`)
             .setFields(b)
 		interaction.editReply({ embeds: [serversEM] });

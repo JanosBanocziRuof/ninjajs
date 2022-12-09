@@ -1,8 +1,7 @@
 const functions = require('../global-functions.js')
 
 const fetch  = require('node-fetch');
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 
 const nf = new Intl.NumberFormat('en-US')
@@ -79,19 +78,19 @@ module.exports = {
 			color = await functions.getAura('ID', interaction['options']['_hoistedOptions'][0]['value'])
 		}
 		if (profile == 'invalid'){
-			pingEm = new MessageEmbed()
-				.setColor(interaction.guild.me.displayHexColor)
+			pingEm = new EmbedBuilder()
+				.setColor(interaction.guild.members.me.displayHexColor)
 				.setDescription('Invalid name or ID. Please double check spelling (cApiTALizATiNG MaTtERs) and try again. If you are not sure how to spell a players name, you can search for it with `/search [query]`')
 
 		} else {
-			pingEm = new MessageEmbed()
+			pingEm = new EmbedBuilder()
 				.setColor(color)
 				.setDescription(jsonProfileCruncher(profile))
-			row = new MessageActionRow()
+			row = new ActionRowBuilder()
 				.addComponents(
-					new MessageButton()
+					new ButtonBuilder()
 					.setCustomId('expand')
-					.setStyle('SECONDARY')
+					.setStyle('Secondary')
 					.setLabel(`View ${profile['name']}'s weapon statistics`)
 					.setDisabled(false))
 		}
@@ -110,7 +109,7 @@ module.exports = {
 			filter;
 			i.deferUpdate()
 			if(i.customId === 'expand') {
-				var editedEm = new MessageEmbed()
+				var editedEm = new EmbedBuilder()
 					.setColor(color)
 					.setDescription(weaponStatsMakeup(await functions.getWeaponStats(profile['id']), profile['name']))
 				return interaction.editReply({ embeds: [editedEm], components: [] })
