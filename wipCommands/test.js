@@ -1,71 +1,29 @@
-const fetch  = require('node-fetch');
-const functions = require('../global-functions.js')
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed,  MessageAttachment, MessageActionRow, MessageButton} = require('discord.js');
+let str = "Fists: 67\nShotgun: 221\nSMG: 64\nM79: 1,234\nBarrett: 55,449\nShock Rifle: 159\nPulse Gun: 237\nFlamer: 52\nRPG: 51,666\nRifle: 178\nLasergun: 196\nAK-47: 6,036\nHand Grenade: 17,132\nCluster Grenade: 1,326\nShuriken: 10,275\nDeagles: 43\nSnowballs: 1,913\nMinigun: 359\nX75: 98\nMAC-10: 136\nBow: 77\nAvenger: 210\nCarbine: 99\nChainsaw: 755\nLink Gun: 120";
 
-module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('test')
-		.setDescription('*ahem* testing testing 123'),
-	async execute(interaction) {
-		await interaction.deferReply()
-		//create a action row
-		const row = new MessageActionRow()
-			.addComponents(
-				new MessageButton()
-				.setLabel('back')
-				.setStyle('SECONDARY')
-				.setCustomId('back')
-			)
-			.addComponents(
-				new MessageButton()
-				.setLabel('next')
-				.setStyle('SECONDARY')
-				.setCustomId('next')
-			)
-		const pages = [
-			'Hello',
-			'World',
-			'Foo',
-			'Bar',
-		]
-		let index = 0
-		//create embed
-		const embed = new MessageEmbed()
-			.setColor(interaction.guild.me.displayHexColor)
-			.setDescription(pages[index])
-			.setTitle('Test')
-		const message = await interaction.editReply({ embeds: [embed], components: [row] })
-		//create collector
-		const collector = interaction.channel.createMessageComponentCollector({
-			filter: (btMasher) => {
-				if(interaction.user.id === btMasher.user.id) return true
-				return false
-			}
-		})
-		//listen for collector
-		collector.on('collect', async (btMasher) => {
-			if(btMasher.customId === 'back') {
-				index--
-				if(index < 0) index = pages.length - 1
-				embed.setDescription(pages[index])
-				await interaction.editReply({ embeds: [embed] })
-			} else if(btMasher.customId === 'next') {
-				index++
-				if(index > pages.length - 1) index = 0
-				embed.setDescription(pages[index])
-				await interaction.editReply({ embeds: [embed] })
-			}
-		})
-		collector.on('end', () => {
-			interaction.editReply('Ended')
-		}
-		)
-	}
+// Use .split() to split the string into individual lines
+let lines = str.split("\n");
+
+// finds the longest line
+let longest = 0;
+for (let i = 0; i < lines.length; i++) {
+   if (lines[i].length > longest) {
+      longest = lines[i].length;
+   }
 }
 
+// Use .padEnd() to add whitespace to the end of each line
+lines = lines.map(line => line.padEnd(longest+2, " "));
 
-/*const pingEm = new MessageEmbed()
-			.setColor(interaction.guild.me.displayHexColor)
-			.setDescription('\'tis the season for-or testing, tralalalala lalalaaaaaaaa')
-		await interaction.editReply({ embeds: [pingEm]});*/
+str = "";
+for (var i = 0; i < lines.length; i++) {
+  if (i > 0) {
+    if (i % 2 == 0) {
+      str += "\n";
+    } else {
+      str += " ";
+    }
+  }
+  str += lines[i];
+}
+
+console.log(str);
