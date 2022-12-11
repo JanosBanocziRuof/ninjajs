@@ -29,7 +29,11 @@ for (const file of commandFiles) {
 
 // FIXME: console logs everything
 client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
+   if (!interaction.isCommand()){
+      if (!interaction.isAutocomplete()) {
+         return;
+      }
+   }
 	const command = interaction.client.commands.get(interaction.commandName);
 
 	if (!command) {
@@ -38,7 +42,11 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 
 	try {
-		await command.execute(interaction);
+		if (interaction.isAutocomplete()) {
+			await command.autocomplete(interaction);
+		} else {
+			await command.execute(interaction);
+		}
 	} catch (error) {
 		console.error(error);
 		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });

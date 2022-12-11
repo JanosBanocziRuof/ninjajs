@@ -3,92 +3,62 @@ const functions = require('../global-functions.js')
 const { SlashCommandBuilder, EmbedBuilder,  MessageAttachment } = require('discord.js');
 
 module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('search')
-		.setDescription('search for a player or clan')
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('player')
-                .setDescription('search for a player')
-                .addStringOption(option =>
-                    option.setName('player')
-                        .setDescription('player name')
-                        .setRequired(true)))
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('clan')
-                .setDescription('search for a clan')
-                .addStringOption(option =>
-                    option.setName('clan')
-                        .setDescription('clan name')
-                        .setRequired(true))),
-	async execute(interaction) {
-		await interaction.deferReply()
-        const subCommand = interaction['options']['_subcommand']
-        if (subCommand === 'player') {
-            const player = interaction['options']['_hoistedOptions'][0]['value']
-            const url = `https://api.ninja.io/user/search/${player}`
-            const response = await fetch(url);
-            const data = await response.json();
-            if (data['success'] != true) {
-                const error = new EmbedBuilder()
-                    .setColor(interaction.guild.members.me.displayHexColor)
-                    .setTitle('Error')
-                    .setDescription(data['error'])
-                await interaction.editReply({ embeds: [error] })
-                return
-            } else {
-                var len = data['users'].length
-                if (data['users'].length > 10) {
-                    len = 10
-                } else {
-                    len = data['users'].length
-                }
-                var desc = '';
-                for (let i = 0; i < len; i++) {
-                    desc = desc + `\n\`${data['users'][i]['name']}\` - ${data['users'][i]['id']}`
-                }
-                if (len == 0) {
-                    desc = 'No users found'
-                }
-                const embed = new EmbedBuilder()
-                    .setTitle(`Search results for \`${player}\``)
-                    .setDescription(desc)
-                    .setColor(interaction.guild.members.me.displayHexColor)
-                await interaction.editReply({ embeds: [embed] });
-            }
-        }
-        if (subCommand === 'clan') {
-            const clan = interaction['options']['_hoistedOptions'][0]['value']
-            const url = `https://api.ninja.io/clan/search/${clan}`
-            const response = await fetch(url);
-            const data = await response.json();
-            if (data['success'] != true) {
-                const error = new EmbedBuilder()
-                    .setColor(interaction.guild.members.me.displayHexColor)
-                    .setTitle('Error')
-                    .setDescription(data['error'])
-                await interaction.editReply({ embeds: [error] })
-                return
-            } else {
-                //uncomment the following once buizerd fixed the api
-                /*var len = data['clans'].length
-                if (data['clans'].length > 10) {
-                    len = 10
-                } else {
-                    len = data['clans'].length
-                }
-                var desc = '';
-                for (let i = 0; i < len; i++) {
-                    desc = desc + `\n\`${data['clans'][i]['name']}\` - ${data['clans'][i]['id']}`   //make sure it works once buizerd fixes the api
-                }*/
-                const embed = new EmbedBuilder()
-                    .setTitle(`Unsuccessful`)   //change to `Search results for \`${clan}\`` once buizerd fixes the api
-                    .setDescription('Unavailable at the moment due to an API error') //change to desc once buizerd fixes the api
-                    .setColor(interaction.guild.members.me.displayHexColor)
-                await interaction.editReply({ embeds: [embed] });
-            }
-        }
+   data: new SlashCommandBuilder()
+      .setName('search')
+      .setDescription('search for a player or clan')
+      .addStringOption(option =>
+         option.setName('quary')
+            .setDescription('Enter a search quary')
+            .setRequired(true)),
 
-	}
+   async execute(interaction) {
+      await interaction.deferReply()
+      const quary = interaction.options.getString('quary')
+      const userURL = `https://api.ninja.io/user/search/${quary.replace(/ /g, "")}`
+      const clanURL = `https://api.ninja.io/clan/search/${quary.replace(/ /g, "%20")}`
+
+      const userResponse = await fetch(userURL);
+      const userData = await userResponse.json();
+
+      const clanResponse = await fetch(clanURL);
+      const clanData = await clanResponse.json();
+
+      if (userData['success'] != true || clanData['success'] != true) {
+         const errorEM = new EmbedBuilder()
+            .setColor(interaction.guild.members.me.displayHexColor)
+            .setTitle('Error')
+            .setDescription(userData['error'] || clanData['error'])
+
+         return await interaction.editReply({ embeds: [errorEM] });
+      } else {
+         var userLength = userData['users'].length
+         var clanLength = clanData['clans'].length
+         if (userData['users'].length > 10) {
+            userLength = 10
+         }
+         if (clanData['clans'].length > 10) {
+            clanLength = 10
+         }
+         var userDesc = '';
+         var clanDesc = '';
+         for (let i = 0; i < userLength; i++) {
+            userDesc += `\`${userData['users'][i]['name']}\` - ${userData['users'][i]['id']}\n`
+         }
+         for (let i = 0; i < clanLength; i++) {
+            clanDesc += `\`${clanData['clans'][i]['name']}\` - ${clanData['clans'][i]['id']}\n`
+         }
+         if (userLength == 0) { userDesc = 'No users found' }
+         if (clanLength == 0) { clanDesc = 'No clans found' }
+
+         const searchEM = new EmbedBuilder()
+            .setColor(interaction.guild.members.me.displayHexColor)
+            .setTitle(`Search results for ${quary}`)
+            .addFields(
+               { name: 'Users', value: userDesc, inline: true },
+               { name: 'Clans', value: clanDesc, inline: true }
+            )
+
+         await interaction.editReply({ embeds: [searchEM] });
+      }
+   },
 }

@@ -1,27 +1,13 @@
+const functions = require('../global-functions.js')
+
 const fetch  = require('node-fetch');
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { SlashCommandBuilder,  EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 
 const nf = new Intl.NumberFormat('en-US')
 
-function dhm(ms) {
-    const months = Math.floor(ms / (30 * 24 * 60 * 60 * 1000));
-    const monthsms = ms % (30 * 24 * 60 * 60 * 1000);
-	const days = Math.floor(monthsms / (24*60*60*1000));
-	const daysms = ms % (24*60*60*1000);
-	const hours = Math.floor(daysms / (60*60*1000));
-	const hoursms = ms % (60*60*1000);
-	const minutes = Math.floor(hoursms / (60*1000));
-	const minutesms = ms % (60*1000);
-	const sec = Math.floor(minutesms / 1000);
-	var send = ``
-	if (months != 0) {send=`${months} month/s ago`} else if (days != 0) {send=`${days} day/s ago`} else if (hours != 0) {send=`${hours} hour/s ago`} else if (minutes != 0) {send=`${minutes} minute/s ago`} else if (sec != 0) {send=`${sec} second/s ago`} else {send='Sometime ago'}
-	return send
-}
-
 function avglvl(xp, members){
-    const avgxp = parseInt(xp) / parseInt(members);
-    const shurikens = "<:GreyShuriken:834903789810745404> <:GreyStarShuriken:834903789836173382> <:RedShuriken:834903789706149929> <:RedStarShuriken:834903789621215302> <:OrangeShuriken:834903789428539490> <:OrangeStarShuriken:834903789668270140> <:YellowShuriken:834903789223673868> <:YellowStarShuriken:834903789751369728> <:GreenShuriken:834903789659095100> <:GreenStarShuriken:834903789604438056> <:BlueShuriken:834903789131530291>".split(" ")
+   const avgxp = parseInt(xp) / parseInt(members);
+   const shurikens = "<:GreyShuriken:834903789810745404> <:GreyStarShuriken:834903789836173382> <:RedShuriken:834903789706149929> <:RedStarShuriken:834903789621215302> <:OrangeShuriken:834903789428539490> <:OrangeStarShuriken:834903789668270140> <:YellowShuriken:834903789223673868> <:YellowStarShuriken:834903789751369728> <:GreenShuriken:834903789659095100> <:GreenStarShuriken:834903789604438056> <:BlueShuriken:834903789131530291>".split(" ")
 	const lvl = Math.min(Math.max(Math.floor(.2 * Math.sqrt(avgxp / 15.625)), 1), 160)
 	const sure = shurikens[Math.floor(lvl/16)]
 	return sure+lvl
@@ -29,8 +15,7 @@ function avglvl(xp, members){
 
 function avgTit(pts, members){
     const avgpts = parseInt(pts) / parseInt(members);
-    const rankTitles="Newbie Beginner Novice Initiated Trained Competent Adept Skilled Proficient Advanced Expert Elite Champion Master Grandmaster Ninja".split(" ")
-    return 49500<=avgpts?rankTitles[rankTitles.length-1]:rankTitles[Math.floor(1/30*(Math.sqrt(6*avgpts+11025)-135))+1]
+    return functions.mapToRankTitles(avgpts)
 }
 
 function overview(data, leader){
@@ -40,6 +25,7 @@ function overview(data, leader){
 
 function memberChunks(members){
     const chunks = []
+    if (members.length < 16) return members
     for (let i = 0; i < members.length; i+=16) {
         chunks.push(members.slice(i, i+16))
     }
@@ -47,122 +33,193 @@ function memberChunks(members){
 }
 function singlePage(memsOnPage){
    if (!memsOnPage) return 'No members found'
-   return memsOnPage.map(m=>`\`${m['name']}\` (${m['role']})`).join('\n')
+   let formatted = ''
+   if (memsOnPage.length != undefined) {
+      for (let i = 0; i < memsOnPage.length; i++) {
+         formatted += `\`${memsOnPage[i]['name']}\` - ${memsOnPage[i]['role']}\n`
+      }
+   } else {formatted = `\`${memsOnPage['name']}\` - ${memsOnPage['role']}`}
+   return formatted
 }
 
 function navButtons(index, maxPage){
     //if (index == 0) set bttom to true
     //if (index == maxPage) set top to true
-    const top = index == 0?false:true
-    const bottom = index == maxPage?false:true
-    const row = new MessageActionRow()
+    const top = index == 0?true:false;
+    const bottom = index == maxPage?true:false;
+    const row = new ActionRowBuilder()
                 .addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('first')
-                        .setStyle('SECONDARY')
+                        .setStyle('Secondary')
                         .setEmoji('<:start:909536580023238706>')
                         .setDisabled(top),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('back')
-                        .setStyle('SECONDARY')
+                        .setStyle('Secondary')
                         .setEmoji('<:rewind:909536580111323166>')
                         .setDisabled(top),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('forward')
-                        .setStyle('SECONDARY')
+                        .setStyle('Secondary')
                         .setEmoji('<:ff:909536579859669024>')
                         .setDisabled(bottom),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('last')
-                        .setStyle('SECONDARY')
+                        .setStyle('Secondary')
                         .setEmoji('<:end:909536580128104478>')
                         .setDisabled(bottom),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('stop')
-                        .setStyle('DANGER')
+                        .setStyle('Danger')
                         .setEmoji('<:x_:909536634234630184>')
-                        .setDisabled(false))
+                        .setDisabled(false));
+      return row
 }
 
 module.exports = {
-    data: new SlashCommandBuilder()
+   // builds the slash command
+   data: new SlashCommandBuilder()
 		.setName('clan')
 		.setDescription('Get the stats/members of a given clan.')
-		.addSubcommand(subcommand =>
-			subcommand.setName('name')
-			.setDescription('Get a clans\'s stats via its name.')
-			.addStringOption(option =>
-				option.setName('name')
-				.setDescription('the clans\'s name.')
-				.setRequired(true)))
-		.addSubcommand(subcommand =>
-			subcommand.setName('clanid')
-			.setDescription('Get the stats\'s stats via its clan id.')
-			.addIntegerOption(option =>
-				option.setName('clanid')
-				.setDescription('the clan\'s id.')
-				.setRequired(true))),
-    async execute(interaction) {
-        await interaction.deferReply()
-        const subCommand = interaction['options']['_subcommand']
-        if (subCommand === 'name') {
-            const clan = interaction['options']['_hoistedOptions'][0]['value']
-            await interaction.editReply('The API currently has a bug. Please use the clan id instead.')
-        } else if (subCommand === 'clanid') {
-            const clanid = interaction['options']['_hoistedOptions'][0]['value']
-            const mResponse = await fetch(`https://api.ninja.io/clan/${clanid}/members`)
-            const mData = await mResponse.json()
-            const members = mData['members']
-            var index = 0
-            const leader = members.find(i => i['role'] === 'leader')
-            const leaderName = leader ? `\`${leader['name']}\`(${leader['id']})`: false
-            const url = `https://api.ninja.io/clan/${clanid}/clan-id`
-            const response = await fetch(url);
-            const data = await response.json()
-            if (data['success'] != true) {
-                const error = new MessageEmbed()
-                    .setColor(interaction.guild.me.displayHexColor)
-                    .setTitle('Error')
-                    .setDescription(data['error'])
-                await interaction.editReply({ embeds: [error] })
-                return
-            } else {
-                const embed = new MessageEmbed()
-                    .setColor(interaction.guild.me.displayHexColor)
-                    .setDescription(overview(data, leaderName))
-                const botton = new MessageActionRow()
-                    .addComponents(
-                        new MessageButton()
-                        .setCustomId('members')
-                        .setStyle('SECONDARY')
-                        .setLabel(`View ${data['clan']['name']}'s Members`)
-                        .setDisabled(false)
-                    )
-                await interaction.editReply({ embeds: [embed], components: [botton]})
+      .addStringOption(option =>
+         option.setName('name')
+            .setDescription('The name')
+            .setRequired(true))
+      .addBooleanOption(option =>
+         option.setName('id')
+            .setDescription('ID or not?')),
 
-                const filter = (btMasher) => {
-                    if(interaction.user.id === btMasher.user.id) return true
-                    return false
-                };
-                const collector = interaction.channel.createMessageComponentCollector({
-                    filter,
-                    max: 16,
-                    time: 16000
-                })
-                collector.on('collect', async i => {
-                    filter;
-                    i.deferUpdate()
-                    if(i.customId === 'members') {
-                        var row = navButtons(index, memberChunks(members).length-1)
-                        var editedEm = new MessageEmbed()
-                            .setColor(interaction.guild.me.displayHexColor)
-                            .setDescription(singlePage(memberChunks(members)[index]))
-                        return interaction.editReply({ embeds: [editedEm], components: [row] })
-                }})
-                collector.on('end', (btnInt) => {
-                    return interaction.editReply({components: []})
-                })
+   // executes the slash command
+   async execute(interaction) {
+         // try to defer the reply
+         try {
+            await interaction.deferReply()
+         } catch (error) {
+            console.log(error)
+         }
+
+         var clan, members = ''
+
+         if (interaction.options.getBoolean('id')){
+            clan = await functions.getClanProfile(interaction.options.getString('name'))
+            members = await functions.getClanMembers(interaction.options.getString('name'))
+         } else {
+            let clanID = await functions.getClanID(interaction.options.getString('name'))
+            if (clanID == 'invalid') {
+               clan = 'invalid'
+            } else {
+               clan = await functions.getClanProfile(clanID)
+               members = await functions.getClanMembers(clanID)
             }
+         }
+
+         if (clan == 'invalid') {
+            const error = new EmbedBuilder()
+               .setColor(interaction.guild.members.me.displayHexColor)
+               .setTitle('Error')
+               .setDescription('Invalid clan name or ID.')
+            await interaction.editReply({ embeds: [error] })
+            return
+         } else if (clan['success'] != true) {
+            const error = new EmbedBuilder()
+               .setColor(interaction.guild.members.me.displayHexColor)
+               .setTitle('Error')
+               .setDescription(clan['error'])
+            await interaction.editReply({ embeds: [error] })
+            return
+         } else {
+            leaderName = functions.getClanLeader(members)
+            const embed = new EmbedBuilder()
+               .setColor(interaction.guild.members.me.displayHexColor)
+               .setDescription(overview(clan, leaderName))
+            const button = new ActionRowBuilder()
+               .addComponents(
+                  new ButtonBuilder()
+                     .setCustomId('members')
+                     .setStyle('Secondary')
+                     .setLabel(`View ${clan['clan']['name']}'s Members`)
+                     .setDisabled(false)
+               )
+            await interaction.editReply({ embeds: [embed], components: [button]})
+
+            const filter = i => (i.customId == 'members' || i.customId == 'first' || i.customId == 'back' || i.customId == 'forward' || i.customId == 'last' || i.customId == 'stop') && i.user.id === interaction.user.id;
+
+            const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
+
+            var index = 0
+
+            collector.on('collect', async i => {
+
+               if (i.customId === 'members') {
+                  await i.deferUpdate()
+
+                  const chuncks = memberChunks(members['members'])
+                  const row = navButtons(index, chuncks.length-1)
+                  const editedEm = new EmbedBuilder()
+                     .setColor(interaction.guild.members.me.displayHexColor)
+                     .setDescription(singlePage(chuncks[index]))
+                     .setFooter({ text: `Page ${index+1} of ${chuncks.length}` })
+
+                  await i.editReply({ embeds: [editedEm], components: [row] })
+                  collector.resetTimer({ time: 15000 })
+               } else if (i.customId === 'first') {
+                  await i.deferUpdate()
+                  index = 0
+                  const chuncks = memberChunks(members['members'])
+                  const row = navButtons(index, chuncks.length-1)
+                  const editedEm = new EmbedBuilder()
+                     .setColor(interaction.guild.members.me.displayHexColor)
+                     .setDescription(singlePage(chuncks[index]))
+                     .setFooter({ text: `Page ${index+1} of ${chuncks.length}` })
+
+                  await i.editReply({ embeds: [editedEm], components: [row] })
+                  collector.resetTimer({ time: 15000 })
+               } else if (i.customId === 'back') {
+                  await i.deferUpdate()
+                  index--
+                  const chuncks = memberChunks(members['members'])
+                  const row = navButtons(index, chuncks.length-1)
+                  const editedEm = new EmbedBuilder()
+                     .setColor(interaction.guild.members.me.displayHexColor)
+                     .setDescription(singlePage(chuncks[index]))
+                     .setFooter({ text: `Page ${index+1} of ${chuncks.length}` })
+
+                  await i.editReply({ embeds: [editedEm], components: [row] })
+                  collector.resetTimer({ time: 15000 })
+               } else if (i.customId === 'forward') {
+                  await i.deferUpdate()
+                  index++
+                  const chuncks = memberChunks(members['members'])
+                  const row = navButtons(index, chuncks.length-1)
+                  const editedEm = new EmbedBuilder()
+                     .setColor(interaction.guild.members.me.displayHexColor)
+                     .setDescription(singlePage(chuncks[index]))
+                     .setFooter({ text: `Page ${index+1} of ${chuncks.length}` })
+
+                  await i.editReply({ embeds: [editedEm], components: [row] })
+                  collector.resetTimer({ time: 15000 })
+               } else if (i.customId === 'last') {
+                  await i.deferUpdate()
+                  index = memberChunks(members['members']).length - 1
+                  const chuncks = memberChunks(members['members'])
+                  const row = navButtons(index, chuncks.length-1)
+                  const editedEm = new EmbedBuilder()
+                     .setColor(interaction.guild.members.me.displayHexColor)
+                     .setDescription(singlePage(chuncks[index]))
+                     .setFooter({ text: `Page ${index+1} of ${chuncks.length}` })
+
+                  await i.editReply({ embeds: [editedEm], components: [row] })
+                  collector.resetTimer({ time: 15000 })
+               } else if (i.customId === 'stop') {
+                  await i.deferUpdate()
+                  await i.editReply({ components: [] })
+               }
+            });
+
+            collector.on('end', async collected => {
+               await interaction.editReply({ components: [] })
+            });
         }
     },
 };

@@ -29,7 +29,7 @@ async function getProfile(type, NID){
     if (type == 'name') {
         url = `https://api.ninja.io/user/profile/${NID}/view-name`
     } else if (type == 'ID') {
-        url = `https://api.ninja.io/user/profile/${NID}/view`
+        url = `https://api.ninja.io/clan/${NID}/members`
     }
     const response = await fetch(url)
     if (response.status == 500) {
@@ -38,6 +38,22 @@ async function getProfile(type, NID){
        return await response.json();
     }
 }
+
+async function getClanProfile(NID){
+   url = `https://api.ninja.io/clan/${NID}/clan-id`
+   const response = await fetch(url)
+   const r = await response.json()
+   if (response.status == 500) {
+      return 'invalid';
+   } else{
+      if (r['error'] == 'Clan does not exist.'){
+         return 'invalid'
+      } else{
+         return r
+      }
+   }
+}
+
 
 async function getWeaponStats(ID){
     var url = `https://api.ninja.io/user/${ID}/weapon-stats`
@@ -49,21 +65,6 @@ async function getWeaponStats(ID){
     }
 }
 
-async function getClanStats(ID){
-    var url = `https://api.ninja.io/clan/${ID}/clan-id`
-    const response = await fetch(url)
-    const r = await response.json()
-    if (response.status == 500) {
-        return 'invalid';
-    } else{
-        if (r['error'] == 'Clan does not exist.'){
-            return 'invalid'
-        } else{
-            return r
-        }
-    }
-}
-
 async function getClanID(name){
     var url = `https://api.ninja.io/clan/list`
     const response = await fetch(url)
@@ -71,7 +72,7 @@ async function getClanID(name){
     var clans = r['clans']
     var clanID = '0'
     for (i in clans){
-        if (clans[i]['name'] == name){
+        if (clans[i]['name'].toLowerCase() == name.toLowerCase()){
             clanID = clans[i]['id']
         }
     }
@@ -86,6 +87,16 @@ async function getClanMembers(ID){
     const response = await fetch(url)
     const r = await response.json()
     return r
+}
+
+function getClanLeader(members){
+      var leader = 'no one'
+      for (i in members['members']){
+         if (members['members'][i]['role'] == 'leader'){
+            leader = members['members'][i]['name']
+         }
+      }
+      return leader
 }
 
 async function getGameVersion(){
@@ -127,11 +138,12 @@ module.exports = {
    getAura,
    getProfile,
    getWeaponStats,
-   getClanStats,
    getClanID,
    getClanMembers,
    getGameVersion,
    dhm,
    levelMaker,
-   mapToRankTitles
+   mapToRankTitles,
+   getClanProfile,
+   getClanLeader
 }
