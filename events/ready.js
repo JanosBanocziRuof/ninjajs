@@ -1,3 +1,5 @@
+const { ActivityType } = require('discord.js');
+
 module.exports = {
 	name: 'ready',
 	once: true,
@@ -14,7 +16,7 @@ module.exports = {
 		setInterval(() => {
 			if(index === arrayOfStatus.length) index = 0
 			const status = arrayOfStatus[index]
-			client.user.setActivity(status, { type: 'WATCHING' })
+			client.user.setActivity(status, { type: ActivityType.Watching });
 			index++
 		}, 5000)
 	}

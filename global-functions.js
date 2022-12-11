@@ -29,7 +29,7 @@ async function getProfile(type, NID){
     if (type == 'name') {
         url = `https://api.ninja.io/user/profile/${NID}/view-name`
     } else if (type == 'ID') {
-        url = `https://api.ninja.io/clan/${NID}/members`
+        url = `https://api.ninja.io/user/profile/${NID}/view`
     }
     const response = await fetch(url)
     if (response.status == 500) {
