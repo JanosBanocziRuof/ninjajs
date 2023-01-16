@@ -85,7 +85,11 @@ async execute(interaction) {
 
       collector.on('collect', async i => {
          if (i.customId === 'expand') {
-            await i.deferUpdate();
+            try {
+               await i.deferUpdate();
+            } catch (error) {
+               console.log(error)
+            }
             var editedEm = new EmbedBuilder()
 					.setColor(color)
 					.setDescription(weaponStatsMakeup(await functions.getWeaponStats(profile['id']), profile['name']))

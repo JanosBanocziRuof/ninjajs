@@ -1,4 +1,3 @@
-const fetch  = require('node-fetch');
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Intents, GatewayIntentBits, Events } = require('discord.js');
@@ -39,7 +38,6 @@ for (const file of eventFiles) {
 	}
 }
 
-// FIXME: console logs everything
 client.on(Events.InteractionCreate, async interaction => {
    if (!interaction.isCommand()){
       if (!interaction.isAutocomplete()) {
@@ -61,7 +59,7 @@ client.on(Events.InteractionCreate, async interaction => {
 		}
 	} catch (error) {
 		console.error(error);
-		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		// await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 	}
 });
 

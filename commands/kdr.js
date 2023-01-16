@@ -21,12 +21,9 @@ module.exports = {
 // execute the slash command
 async execute(interaction) {
    // try to defer the reply
-   try {
-      await interaction.deferReply()
-   } catch (error) {
-      console.log(error)
-   }
-
+   
+   await interaction.deferReply()
+   
    var color, profile, pingEm, row = ''
 
    if (interaction.options.getBoolean('id')) {
@@ -45,9 +42,11 @@ async execute(interaction) {
    } else {
       pingEm = new EmbedBuilder()
          .setColor(color)
-         .setDescription(`\`${profile['name']}\`'s K/D Ratio is ${nf.format((profile['kills'] / profile['deaths']).toFixed(2))}`)
+         .setDescription(`\`${profile['name']}\`'s K/D Ratio is ${nf.format((profile['kills'] / profile['deaths']).toFixed(3))}`)
 	}
 
-	await interaction.editReply({ embeds: [pingEm]});   
+	
+   await interaction.editReply({ embeds: [pingEm]});
+   
 	},
 };

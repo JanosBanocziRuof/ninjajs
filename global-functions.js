@@ -4,9 +4,9 @@ const fetch  = require('node-fetch');
 async function getAura(type, NID){
     var url = ''
     if (type == 'name') {
-        url = `https://api.ninja.io/user/profile/${NID}/view-name`
+        url = `https://api2.ninja.io/user/profile/${NID}/view-name`
     } else if (type == 'ID') {
-        url = `https://api.ninja.io/user/profile/${NID}/view`
+        url = `https://api2.ninja.io/user/profile/${NID}/view`
     }
     const response = await fetch(url)
     if (response.status == 500) {
@@ -16,9 +16,9 @@ async function getAura(type, NID){
         const custom = profile['customization']
         if (Object.getOwnPropertyNames(custom).length != 0) {
             const orb = custom['orb']['data']
-            if (orb != {}) {
-                const color = orb['energy']
-                return parseInt(color, 0)
+            if (Object.getOwnPropertyNames(orb).length != 0) {
+               const color = orb['energy']
+               return parseInt(color, 0)
             } else {return 16645629}
         } else {return 16645629}
     }
@@ -27,9 +27,9 @@ async function getAura(type, NID){
 async function getProfile(type, NID){
     var url = ''
     if (type == 'name') {
-        url = `https://api.ninja.io/user/profile/${NID}/view-name`
+        url = `https://api2.ninja.io/user/profile/${NID}/view-name`
     } else if (type == 'ID') {
-        url = `https://api.ninja.io/user/profile/${NID}/view`
+        url = `https://api2.ninja.io/user/profile/${NID}/view`
     }
     const response = await fetch(url)
     if (response.status == 500) {
@@ -40,7 +40,7 @@ async function getProfile(type, NID){
 }
 
 async function getClanProfile(NID){
-   url = `https://api.ninja.io/clan/${NID}/clan-id`
+   url = `https://api2.ninja.io/clan/${NID}/clan-id`
    const response = await fetch(url)
    const r = await response.json()
    if (response.status == 500) {
@@ -56,7 +56,7 @@ async function getClanProfile(NID){
 
 
 async function getWeaponStats(ID){
-    var url = `https://api.ninja.io/user/${ID}/weapon-stats`
+    var url = `https://api2.ninja.io/user/${ID}/weapon-stats`
     const response = await fetch(url)
     if (response.status == 500) {
         return 'invalid';
@@ -66,7 +66,7 @@ async function getWeaponStats(ID){
 }
 
 async function getClanID(name){
-    var url = `https://api.ninja.io/clan/list`
+    var url = `https://api2.ninja.io/clan/list`
     const response = await fetch(url)
     r = await response.json()
     var clans = r['clans']
@@ -83,7 +83,7 @@ async function getClanID(name){
 }
 
 async function getClanMembers(ID){
-    var url = `https://api.ninja.io/clan/${ID}/members`
+    var url = `https://api2.ninja.io/clan/${ID}/members`
     const response = await fetch(url)
     const r = await response.json()
     return r
@@ -121,16 +121,21 @@ function dhm(ms) {
 	return send
   }
 
-const shurikens = "<:GreyShuriken:834903789810745404> <:GreyStarShuriken:834903789836173382> <:RedShuriken:834903789706149929> <:RedStarShuriken:834903789621215302> <:OrangeShuriken:834903789428539490> <:OrangeStarShuriken:834903789668270140> <:YellowShuriken:834903789223673868> <:YellowStarShuriken:834903789751369728> <:GreenShuriken:834903789659095100> <:GreenStarShuriken:834903789604438056> <:BlueShuriken:834903789131530291>".split(" ")
+const shurikens = "<:GreyShuriken:834903789810745404> <:GreyStarShuriken:834903789836173382> <:RedShuriken:834903789706149929> <:RedStarShuriken:834903789621215302> <:OrangeShuriken:834903789428539490> <:OrangeStarShuriken:834903789668270140> <:YellowShuriken:834903789223673868> <:YellowStarShuriken:834903789751369728> <:GreenShuriken:834903789659095100> <:GreenStarShuriken:834903789604438056> <:BlueShuriken:834903789131530291> <:BlueShuriken:834903789131530291> <:BlueStarShuriken:1063127625536639028> <:PurpleShuriken:834903789156171787> <:PurpleStarShuriken:834903789265747969> <:PinkShuriken:834903789601161256> <:PinkStarShuriken:834903789600899092>".split(" ")
 function levelMaker(xp) {
-	const lvl = Math.min(Math.max(Math.floor(.2 * Math.sqrt(xp / 15.625)), 1), 160)
+	const lvl = Math.min(Math.max(Math.floor(.2 * Math.sqrt(xp / 15.625)), 1), 240)
 	const sure = shurikens[Math.floor(lvl/16)]
 	return sure+lvl
 }
 
 const rankTitles="Newbie Beginner Novice Initiated Trained Competent Adept Skilled Proficient Advanced Expert Elite Champion Master Grandmaster Ninja".split(" ")
+function mapSkillToIndex(a) {
+   let b = 0;
+   500 <= a && 1000 > a ? b = 1 : 1000 <= a && 1501 > a ? b = 2 : 1501 <= a && 1600 > a ? b = 3 : 1600 <= a && 1700 > a ? b = 4 : 1700 <= a && 1800 > a ? b = 5 : 1800 <= a && 1900 > a ? b = 6 : 1900 <= a && 2000 > a ? b = 7 : 2000 <= a && 2100 > a ? b = 8 : 2100 <= a && 2200 > a ? b = 9 : 2200 <= a && 2300 > a ? b = 10 : 2300 <= a && 2400 > a ? b = 11 : 2400 <= a && 2500 > a ? b = 12 : 2500 <= a && 2600 > a ? b = 13 : 2600 <= a && 2700 > a ? b = 14 : 2700 <= a && (b = 15);
+   return b
+}
 function mapToRankTitles(skill) {
-	return 49500<=skill?rankTitles[rankTitles.length-1]:rankTitles[Math.floor(1/30*(Math.sqrt(6*skill+11025)-135))+1]
+   return rankTitles[mapSkillToIndex(skill)]
 }
 
 

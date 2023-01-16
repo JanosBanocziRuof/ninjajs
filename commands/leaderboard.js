@@ -22,7 +22,7 @@ const weaponIDs = {
    'cluster grenade': 21,
    'shuriken': 23,
    'deagles': 24,
-   'snowballs': 25,
+   'snowball': 25,
    'minigun': 26,
    'x75': 27,
    'mac-10': 28,
@@ -39,21 +39,21 @@ const weaponIDs = {
 const choices = ['experience', 'skill', 'barrett','m79','hand grenade','flamer','rpg','mac-10','shuriken','bow','avenger','smg','link gun','lasergun','shotgun','chainsaw','pulse gun','ak-47','minigun','carbine','deagles','x75','rifle','shock rifle','cluster grenade','snowball','boomerang','fists','uzi','m60']
 
 async function getWeaponLeaderboard(type) {
-   return fetch(`https://api.ninja.io/user/weapon-ranking/${type}`)
+   return fetch(`https://api2.ninja.io/user/weapon-ranking/${type}`)
       .then(res => {
          return res.json()
       })
   }
 
 async function getSkillXPLeaderboard() {
-    return fetch('https://api.ninja.io/user/ranking')
+    return fetch('https://api2.ninja.io/user/ranking')
         .then(res => {
             return res.json()
         })
 }
 
 async function getWeaponRanking() {
-    return fetch('https://api.ninja.io/user/weapon-ranking')
+    return fetch('https://api2.ninja.io/user/weapon-ranking')
         .then(res => {
             return res.json()
         })
