@@ -91,7 +91,7 @@ function historyFormatter(json, ID) {
         if (opponent.length > maxOppenentNameLength) {
             maxOppenentNameLength = opponent.length
         }
-        output += `**${reason}**(${delta})\n᲼᲼᲼\`namePlaceholder_${i}\` on <t:${date}:d>\n`
+        output += `**${reason}**(${delta})\n>>>\`namePlaceholder_${i}\` on <t:${date}:d>\n`
     }
     // make all the names in the vector the same length using extra spaces at the end
     for (let i = 0; i < opponents.length; i++) {

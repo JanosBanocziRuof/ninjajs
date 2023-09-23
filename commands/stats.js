@@ -56,26 +56,27 @@ function jsonProfileCruncher(json, killsJson) {
         topWeaponString = `${weapons[currentTopWeapon]} - ${nf.format(currentTopKill)} kills`
 
     }
-    if (json['clan_id'] != null) { clan = `${json['clan_role']} of ${json['clan_name']}(${json['clan_id']})` }
-    return `**Username:** \`${json['name']}\`
-            **UserID:** ${json['id']}
-            **Status:** ${json['status']}
-            **Level:** ${functions.levelMaker(json['experience'])}
-            **Exp:** ${nf.format(json['experience'])}
-            **Level Rank:** ${nf.format(json['ranking'])}
-            **Kills:** ${nf.format(json['kills'])}
-            **Deaths:** ${nf.format(json['deaths'])}
-            **K/D Ratio:** ${Math.round(1000 * (parseInt(json['kills']) / parseInt(json['deaths']))) / 1000 || 0}
-            **Flag Captures:** ${nf.format(json['caps'])}
-            **Title:** ${functions.mapToRankTitles(json['skill'])}
-            **Skill Points:** ${nf.format(json['skill'])}
-            **Skill Rank:** ${nf.format(json['skill_ranking'])}
-            **Top Weapon:** ${topWeaponString}
-            Created on <t:${(Date.parse(json['created']) / 1000) - 18000}:D>
-            Last seen <t:${(Date.parse(json['seen']) / 1000) - 18000}:R>\n${clan}`
+    if (json['clan_id'] != null) { clan = `${json['clan_role']} of ${json['clan_name']}(${json['clan_id']})\n` }
+    return `**Username:** \`${json['name']}\`\n` +
+            `**UserID:** ${json['id']}\n` +
+            `**Status:** ${json['status']}\n` +
+            `**Level:** ${functions.levelMaker(json['experience'])}\n` +
+            `**Exp:** ${nf.format(json['experience'])}\n` +
+            `**Level Rank:** ${nf.format(json['ranking'])}\n` +
+            `**Kills:** ${nf.format(json['kills'])}` +
+            `**Deaths:** ${nf.format(json['deaths'])}\n` +
+            `**K/D Ratio:** ${Math.round(1000 * (parseInt(json['kills']) / parseInt(json['deaths']))) / 1000 || 0}\n` +
+            `**Flag Captures:** ${nf.format(json['caps'])}\n` +
+            `**Title:** ${functions.mapToRankTitles(json['skill'])}\n` +
+            `**Skill Points:** ${nf.format(json['skill'])}\n` +
+            `**Skill Rank:** ${nf.format(json['skill_ranking'])}\n` +
+            `**Top Weapon:** ${topWeaponString}\n` +
+            `Created on <t:${(Date.parse(json['created']) / 1000) - 18000}:D>\n` +
+            `Last seen <t:${(Date.parse(json['seen']) / 1000) - 18000}:R>\n` +
+            `${clan}`
 }
 
-// 
+
 function weaponStatsMakeup(json, name) {
     var i = 0
     var weaponDict = {}
@@ -84,34 +85,34 @@ function weaponStatsMakeup(json, name) {
         i = i + 1
     }
     var title = `\`${name}\` has gotten the following kills:\n`
-    var send = `**Fists:** ${nf.format(weaponDict['-1'])}
-                **Shotgun:** ${nf.format(weaponDict['1'])}
-                **SMG:** ${nf.format(weaponDict['2'])}
-                **M79:** ${nf.format(weaponDict['3'])}
-                **Barrett:** ${nf.format(weaponDict['4'])}
-                **Shock Rifle:** ${nf.format(weaponDict['5'])}
-                **Pulse Gun:** ${nf.format(weaponDict['6'])}
-                **Flamer:** ${nf.format(weaponDict['7'])}
-                **RPG:** ${nf.format(weaponDict['8'])}
-                **Rifle:** ${nf.format(weaponDict['9'])}
-                **Lasergun:** ${nf.format(weaponDict['10'])}
-                **AK-47:** ${nf.format(weaponDict['12'])}
-                **Hand Grenade:** ${nf.format(weaponDict['20'])}
-                **Cluster Grenade:** ${nf.format(weaponDict['21'])}
-                **Shuriken:** ${nf.format(weaponDict['23'])}
-                **Deagles:** ${nf.format(weaponDict['24'])}
-                **Snowballs:** ${nf.format(weaponDict['25'])}
-                **Minigun:** ${nf.format(weaponDict['26'])}
-                **X75:** ${nf.format(weaponDict['27'])}
-                **MAC-10:** ${nf.format(weaponDict['28'])}
-                **Bow:** ${nf.format(weaponDict['29'])}
-                **Avenger:** ${nf.format(weaponDict['30'])}
-                **Carbine:** ${nf.format(weaponDict['31'])}
-                **Chainsaw:** ${nf.format(weaponDict['204'])}
-                **Link Gun:** ${nf.format(weaponDict['213'])}
-                **Boomerang:** ${nf.format(weaponDict['33'])}
-                **Uzi:** ${nf.format(weaponDict['35'])}
-                **M60:** ${nf.format(weaponDict['34'])}`
+    var send = `**Fists:** ${nf.format(weaponDict['-1'])}\n` +
+                `**Shotgun:** ${nf.format(weaponDict['1'])}\n` +
+                `**SMG:** ${nf.format(weaponDict['2'])}\n` +
+                `**M79:** ${nf.format(weaponDict['3'])}\n` +
+                `**Barrett:** ${nf.format(weaponDict['4'])}\n` +
+                `**Shock Rifle:** ${nf.format(weaponDict['5'])}\n` +
+                `**Pulse Gun:** ${nf.format(weaponDict['6'])}\n` +
+                `**Flamer:** ${nf.format(weaponDict['7'])}\n` +
+                `**RPG:** ${nf.format(weaponDict['8'])}\n` +
+                `**Rifle:** ${nf.format(weaponDict['9'])}\n` +
+                `**Lasergun:** ${nf.format(weaponDict['10'])}\n` +
+                `**AK-47:** ${nf.format(weaponDict['12'])}\n` +
+                `**Hand Grenade:** ${nf.format(weaponDict['20'])}\n` +
+                `**Cluster Grenade:** ${nf.format(weaponDict['21'])}\n` +
+                `**Shuriken:** ${nf.format(weaponDict['23'])}\n` +
+                `**Deagles:** ${nf.format(weaponDict['24'])}\n` +
+                `**Snowballs:** ${nf.format(weaponDict['25'])}\n` +
+                `**Minigun:** ${nf.format(weaponDict['26'])}\n` +
+                `**X75:** ${nf.format(weaponDict['27'])}\n` +
+                `**MAC-10:** ${nf.format(weaponDict['28'])}\n` +
+                `**Bow:** ${nf.format(weaponDict['29'])}\n` +
+                `**Avenger:** ${nf.format(weaponDict['30'])}\n` +
+                `**Carbine:** ${nf.format(weaponDict['31'])}\n` +
+                `**Chainsaw:** ${nf.format(weaponDict['204'])}\n` +
+                `**Link Gun:** ${nf.format(weaponDict['213'])}\n` +
+                `**Boomerang:** ${nf.format(weaponDict['33'])}\n` +
+                `**Uzi:** ${nf.format(weaponDict['35'])}\n` +
+                `**M60:** ${nf.format(weaponDict['34'])}`
 
     send = title + send;
 
@@ -176,6 +177,7 @@ module.exports = {
             // pause for a tenth of a second
             await new Promise(r => setTimeout(r, 100));
             // proactively fetch the weapon stats, and store them in a variable
+
             weaponStats = await functions.getWeaponStats(profile['id'])
             EmWithTopWeapon = new EmbedBuilder()
                 .setColor(color)
