@@ -34,16 +34,21 @@ async execute(interaction) {
       color = await functions.getAura('name', interaction.options.getString('name'))
    }
 
-   if (profile == 'invalid'){
-      pingEm = new EmbedBuilder()
-         .setColor(interaction.guild.members.me.displayHexColor)
-         .setDescription('Something went critically wrong. Please try again later.')
-
-   } else {
-      pingEm = new EmbedBuilder()
-         .setColor(color)
-         .setDescription(`\`${profile['name']}\`'s K/D Ratio is ${nf.format((profile['kills'] / profile['deaths']).toFixed(3))}`)
-	}
+    if (profile == 'invalid') {
+        pingEm = new EmbedBuilder()
+            .setColor(interaction.guild.members.me.displayHexColor)
+            .setDescription('Something went critically wrong. Please try again later.')
+        await interaction.editReply({ embeds: [pingEm] });
+    } else if (profile == 'badName') {
+        pingEm = new EmbedBuilder()
+            .setColor(interaction.guild.members.me.displayHexColor)
+            .setDescription('I could not find a player with that name, please double check your spelling.\nIf you unsure of the spelling, you can try searching for them using </search:1051343380069752909>.')
+        await interaction.editReply({ embeds: [pingEm] });
+    } else {
+        pingEm = new EmbedBuilder()
+            .setColor(color)
+            .setDescription(`\`${profile['name']}\`'s K/D Ratio is ${nf.format((profile['kills'] / profile['deaths']).toFixed(3))}`)
+    }
 
 	
    await interaction.editReply({ embeds: [pingEm]});

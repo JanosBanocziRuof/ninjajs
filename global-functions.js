@@ -33,6 +33,8 @@ async function getProfile(type, NID){
     }
     const response = await fetch(url)
     if (response.status == 500) {
+        return 'badName';
+    } else if (response.status != 200) {
         return 'invalid';
     } else{
        return await response.json();
@@ -138,6 +140,24 @@ function mapToRankTitles(skill) {
    return rankTitles[mapSkillToIndex(skill)]
 }
 
+async function getUserID(name) {
+    url = `https://api2.ninja.io/user/profile/${name}/view-name`
+    const response = await fetch(url)
+    if (response.status == 500) {
+        console.log('bad name')
+        return 'badName';
+    } else if (response.status != 200) {
+        return 'invalid';
+    } else{
+        // create a json object
+        const json = await response.json();
+        // return the id
+        return json['id']
+    }
+    
+
+}
+
 
 module.exports = {
    getAura,
@@ -150,5 +170,6 @@ module.exports = {
    levelMaker,
    mapToRankTitles,
    getClanProfile,
-   getClanLeader
+   getClanLeader,
+   getUserID
 }
