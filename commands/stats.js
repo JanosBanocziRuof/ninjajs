@@ -63,7 +63,7 @@ function jsonProfileCruncher(json, killsJson) {
             `**Level:** ${functions.levelMaker(json['experience'])}\n` +
             `**Exp:** ${nf.format(json['experience'])}\n` +
             `**Level Rank:** ${nf.format(json['ranking'])}\n` +
-            `**Kills:** ${nf.format(json['kills'])}` +
+            `**Kills:** ${nf.format(json['kills'])}\n` +
             `**Deaths:** ${nf.format(json['deaths'])}\n` +
             `**K/D Ratio:** ${Math.round(1000 * (parseInt(json['kills']) / parseInt(json['deaths']))) / 1000 || 0}\n` +
             `**Flag Captures:** ${nf.format(json['caps'])}\n` +
