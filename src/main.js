@@ -1,11 +1,11 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Intents, GatewayIntentBits, Events } = require('discord.js');
-const { token } = require('./config.json');
+require('dotenv').config();
 
 
 // ###### REMEMBER ######
-// type 'node deploy-commands.js' in a terminal to deploy the commands
+// type 'node ./src/deploy-commands.js' in a terminal to deploy the commands
 
 // create a new client instance
 const client  = new Client({intents: [GatewayIntentBits.Guilds]});
@@ -64,4 +64,4 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 // login
-client.login(token);
+client.login(process.env.TOKEN);
