@@ -1,5 +1,8 @@
 const { version } = require('discord.js');
-const fetch  = require('node-fetch');
+let fetch;
+import('node-fetch').then(module => {
+    fetch = module.default;
+});
 
 async function getAura(type, NID){
     var url = ''

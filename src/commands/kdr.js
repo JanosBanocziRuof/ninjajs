@@ -1,6 +1,5 @@
 const functions = require('../global-functions.js')
 
-const fetch  = require('node-fetch');
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 const nf = new Intl.NumberFormat('en-US')

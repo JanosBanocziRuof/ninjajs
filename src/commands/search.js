@@ -1,4 +1,7 @@
-const fetch  = require('node-fetch');
+let fetch;
+import('node-fetch').then(module => {
+    fetch = module.default;
+});
 const functions = require('../global-functions.js')
 const { SlashCommandBuilder, EmbedBuilder,  MessageAttachment } = require('discord.js');
 
