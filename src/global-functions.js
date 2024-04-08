@@ -175,7 +175,8 @@ function levelMaker(xp) {
 	return sure+lvl
 }
 
-const rankTitles="Newbie Beginner Novice Initiated Trained Competent Adept Skilled Proficient Advanced Expert Elite Champion Master Grandmaster Ninja".split(" ")
+const rankTitles="Newbie Novice Rookie Beginner Initiated Competent Adept Skilled Proficient Advanced Expert Elite Champion Master Grandmaster Ninja".split(" ")
+
 /**
  * This function maps a skill index number
  * @param {number} skill the skill to map
@@ -183,7 +184,7 @@ const rankTitles="Newbie Beginner Novice Initiated Trained Competent Adept Skill
  */
 function mapSkillToIndex(a) {
    let b = 0;
-   500 <= a && 1000 > a ? b = 1 : 1000 <= a && 1501 > a ? b = 2 : 1501 <= a && 1600 > a ? b = 3 : 1600 <= a && 1700 > a ? b = 4 : 1700 <= a && 1800 > a ? b = 5 : 1800 <= a && 1900 > a ? b = 6 : 1900 <= a && 2000 > a ? b = 7 : 2000 <= a && 2100 > a ? b = 8 : 2100 <= a && 2200 > a ? b = 9 : 2200 <= a && 2300 > a ? b = 10 : 2300 <= a && 2400 > a ? b = 11 : 2400 <= a && 2500 > a ? b = 12 : 2500 <= a && 2600 > a ? b = 13 : 2600 <= a && 2700 > a ? b = 14 : 2700 <= a && (b = 15);
+   500 <= a && 650 > a ? b = 1 : 650 <= a && 800 > a ? b = 2 : 800 <= a && 1001 > a ? b = 3 : 1001 <= a && 1100 > a ? b = 4 : 1100 <= a && 1200 > a ? b = 5 : 1200 <= a && 1300 > a ? b = 6 : 1300 <= a && 1400 > a ? b = 7 : 1400 <= a && 1500 > a ? b = 8 : 1500 <= a && 1600 > a ? b = 9 : 1600 <= a && 1700 > a ? b = 10 : 1700 <= a && 1800 > a ? b = 11 : 1800 <= a && 1900 > a ? b = 12 : 1900 <= a && 2E3 > a ? b = 13 : 2E3 <= a && 2100 > a ? b = 14 : 2100 <= a && (b = 15);
    return b
 }
 /**
