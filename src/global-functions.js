@@ -37,9 +37,9 @@ async function getAura(type, NID){
  * @returns                     'badName' if the name is not found
  * @returns                     'invalid' if the user is not found
  */
-async function getProfile(type, NID){
-    var url = (type == 'name') ? `https://api2.ninja.io/user/profile/${NID}/view-name` : `https://api2.ninja.io/user/profile/${NID}/view`   // turnary operator. if type is name, use the first url, else use the second url
-    const response = await fetch(url)
+const getProfile = async (type, NID) => {
+    const url = (type == 'name') ? `https://api2.ninja.io/user/profile/${NID}/view-name` : `https://api2.ninja.io/user/profile/${NID}/view`;
+    const response = await fetch(url);
     return response.status == 500 ? 'badName'   // if the response status is 500, return 'badName'
          : response.status != 200 ? 'invalid'   // if the response status is not 200, return 'invalid'
          : await response.json();               // else return the json object
@@ -176,7 +176,6 @@ function levelMaker(xp) {
 }
 
 const rankTitles="Newbie Novice Rookie Beginner Initiated Competent Adept Skilled Proficient Advanced Expert Elite Champion Master Grandmaster Ninja".split(" ")
-
 /**
  * This function maps a skill index number
  * @param {number} skill the skill to map
@@ -192,9 +191,7 @@ function mapSkillToIndex(a) {
  * @param {number} skill the skill to map
  * @returns              the rank title, as a string
  */
-function mapToRankTitles(skill) {
-   return rankTitles[mapSkillToIndex(skill)]
-}
+const mapToRankTitles = skill => rankTitles[mapSkillToIndex(skill)];
 
 /**
  * This function gets the user ID of a user
