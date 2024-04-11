@@ -39,11 +39,11 @@ for (const file of eventFiles) {
 }
 
 client.on(Events.InteractionCreate, async interaction => {
-   if (!interaction.isCommand()){
-      if (!interaction.isAutocomplete()) {
-         return;
-      }
-   }
+    if (!interaction.isCommand()) {
+        if (!interaction.isAutocomplete()) {
+            return;
+        }
+    }
 	const command = interaction.client.commands.get(interaction.commandName);
 
 	if (!command) {
@@ -53,8 +53,10 @@ client.on(Events.InteractionCreate, async interaction => {
 
 	try {
 		if (interaction.isAutocomplete()) {
+            console.log(`Autocomp command: \x1b[36m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
 			await command.autocomplete(interaction);
 		} else {
+            console.log(`Executed command: \x1b[32m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
 			await command.execute(interaction);
 		}
 	} catch (error) {
