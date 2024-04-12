@@ -16,6 +16,7 @@ if (process.platform == 'linux'){ require('dotenv').config() }
 const client  = new Client({intents: [GatewayIntentBits.Guilds]});
 
 client.commands = new Collection();
+client.cooldowns = new Collection();
 
 const commandsPath = path.join(__dirname, 'commands');
 const eventsPath = path.join(__dirname, 'events');
@@ -33,6 +34,7 @@ for (const file of commandFiles) {
 	}
 }
 
+
 for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
 	const event = require(filePath);
@@ -44,12 +46,37 @@ for (const file of eventFiles) {
 }
 
 client.on(Events.InteractionCreate, async interaction => {
+    // Cooldown shenanigans
+    const command = interaction.client.commands.get(interaction.commandName);
+    const { cooldowns } = interaction.client;
+
+    if (!cooldowns.has(command.data.name)) {
+        cooldowns.set(command.data.name, new Collection());
+    }
+
+    const now = Date.now();
+    const timestamps = cooldowns.get(command.data.name);
+    const defaultCooldownDuration = 3;
+    const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1_000;
+
+    if (timestamps.has(interaction.user.id)) {
+        const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+
+        if (now < expirationTime) {
+            const expiredTimestamp = Math.round(expirationTime / 1_000);
+            const secondsLeft = Math.round((expirationTime - now) / 1_000);
+            return interaction.reply({ content: `Please wait, you are on a ${secondsLeft} second cooldown for \`${command.data.name}\`.`, ephemeral: true });
+        }
+    }
+    timestamps.set(interaction.user.id, now);
+    setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
+    // End of cooldown shenanigans
+
     if (!interaction.isCommand()) {
         if (!interaction.isAutocomplete()) {
             return;
         }
     }
-	const command = interaction.client.commands.get(interaction.commandName);
 
 	if (!command) {
 		console.error(`No command matching ${interaction.commandName} was found.`);

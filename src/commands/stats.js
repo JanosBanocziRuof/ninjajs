@@ -120,6 +120,7 @@ function weaponStatsMakeup(json, name) {
 
 module.exports = {
     // build the slash command
+    cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('stats')
         .setDescription('Get the stats of a given player.')
