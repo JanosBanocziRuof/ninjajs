@@ -1,11 +1,16 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Intents, GatewayIntentBits, Events } = require('discord.js');
-require('dotenv').config();
+// use dotenv to load the .env file if on linux. start the bot with 'npm run win' on windows, else 'node .'
+if (process.platform == 'linux'){ require('dotenv').config() }
 
 
 // ###### REMEMBER ######
-// type 'node ./src/deploy-commands.js' in a terminal to deploy the commands
+// How to deploy commands:
+// WINDOWS: 'node --env-file=.env ./src/deploy-commands.js' 
+//          'node --env-file=.env ./src/deploy-commands-global.js'
+// LINUX: 'node ./src/deploy-commands.js'
+//        'node ./src/deploy-commands-global.js'
 
 // create a new client instance
 const client  = new Client({intents: [GatewayIntentBits.Guilds]});

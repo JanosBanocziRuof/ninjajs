@@ -1,6 +1,7 @@
 const { REST, Routes } = require('discord.js');
 const fs = require('node:fs');
-require('dotenv').config();
+// use dotenv to load the .env file if on linux. start the bot with 'npm run win' on windows, else 'node .'
+if (process.platform == 'linux'){ require('dotenv').config() }
 
 const commands = [];
 // Grab all the command files from the commands directory you created earlier
