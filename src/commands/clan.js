@@ -140,7 +140,8 @@ module.exports = {
                      .setLabel(`View ${clan['clan']['name']}'s Members`)
                      .setDisabled(false)
                )
-            await interaction.editReply({ embeds: [embed], components: [button]})
+            // FIXME: await interaction.editReply({ embeds: [embed], components: [button]})
+            await interaction.editReply({ embeds: [embed] })
 
             const filter = i => (i.customId == 'members' || i.customId == 'first' || i.customId == 'back' || i.customId == 'forward' || i.customId == 'last' || i.customId == 'stop') && i.user.id === interaction.user.id;
 

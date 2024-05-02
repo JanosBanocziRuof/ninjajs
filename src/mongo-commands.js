@@ -1,10 +1,11 @@
 const { MongoClient } = require('mongodb');
+const fetch = require('node-fetch');
 
 const url = 'mongodb://localhost:27017';
-const mongo = new MongoClient(url);
-
 const db_name = 'ninjaio';
 const collection_lb = 'leaderboard';
+
+const mongo = new MongoClient(url);
 
 const leaderboardCollection = mongo.db(db_name).collection(collection_lb);
 
