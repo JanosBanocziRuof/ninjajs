@@ -172,7 +172,8 @@ module.exports = {
                         .setStyle('Secondary')
                         .setLabel(`View ${profile['name']}'s weapon statistics`)
                         .setDisabled(false))
-            await interaction.editReply({ embeds: [pingEm], components: [row] });
+            // FIXME: await interaction.editReply({ embeds: [pingEm], components: [row]})
+            await interaction.editReply({ embeds: [pingEm] })
 
             // pause for a tenth of a second
             await new Promise(r => setTimeout(r, 100));
@@ -182,7 +183,8 @@ module.exports = {
             EmWithTopWeapon = new EmbedBuilder()
                 .setColor(color)
                 .setDescription(jsonProfileCruncher(profile, weaponStats))
-            await interaction.editReply({ embeds: [EmWithTopWeapon], components: [row] });
+            // FIXME: await interaction.editReply({ embeds: [EmWithTopWeapon], components: [row]})
+            await interaction.editReply({ embeds: [EmWithTopWeapon] })
             
         }
 

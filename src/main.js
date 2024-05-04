@@ -7,9 +7,9 @@ if (process.platform == 'linux'){ require('dotenv').config() }
 
 // ###### REMEMBER ######
 // How to deploy commands:
-// WINDOWS: 'node --env-file=.env ./src/deploy-commands.js' 
+// WINDOWS: 'node --env-file=.env ./src/deploy-commands-test.js' 
 //          'node --env-file=.env ./src/deploy-commands-global.js'
-// LINUX: 'node ./src/deploy-commands.js'
+// LINUX: 'node ./src/deploy-commands-test.js'
 //        'node ./src/deploy-commands-global.js'
 
 // create a new client instance
