@@ -45,7 +45,7 @@ function historyFormatter(json, ID) {
 
     for (let i = 0; i < interations; i++) {
         var reason, delta, opponent = ''
-        if (games[i]['res'] == 'noshow'){
+        if (games[i]['res'] == 'noshow') {
             reason = 'No Show'
             // if the player is p1
             if (games[i]['gd']['p1_id'] == ID) {
@@ -110,79 +110,79 @@ function historyFormatter(json, ID) {
 }
 
 module.exports = {
-   // build the slash command
-	data: new SlashCommandBuilder()
-   .setName('1v1')
-   .setDescription('Get the 1v1 history of a player.')
-   .addStringOption(option =>
-      option.setName('name')
-         .setDescription('The username')
-         .setRequired(true))
-   .addBooleanOption(option =>
-      option.setName('id')
-         .setDescription('ID or not?')),
+    // build the slash command
+    data: new SlashCommandBuilder()
+        .setName('1v1')
+        .setDescription('Get the 1v1 history of a player.')
+        .addStringOption(option =>
+            option.setName('name')
+                .setDescription('The username')
+                .setRequired(true))
+        .addBooleanOption(option =>
+            option.setName('id')
+                .setDescription('ID or not?')),
 
-// execute the slash command
-async execute(interaction) {
-   // try to defer the reply
-   
-   await interaction.deferReply()
-   
-   var color, history, pingEm, formatted, userID, winRateString, username = ''
+    // execute the slash command
+    async execute(interaction) {
+        // try to defer the reply
 
-   if (interaction.options.getBoolean('id')) {
-      color = await functions.getAura('ID', interaction.options.getString('name'))
-      userID = interaction.options.getString('name')
-      username = await functions.getProfile('ID', interaction.options.getString('name'))
-      if (username != 'badName') { username = username['name'] }
-   } else {
-      color = await functions.getAura('name', interaction.options.getString('name'))
-      // get only the user's ID
-      userID = await functions.getUserID(interaction.options.getString('name'))
-      username = interaction.options.getString('name')
-   }
+        await interaction.deferReply()
 
-    // fetch the user's 1v1 history from https://api2.ninja.io/user/[userID]/match-history
-    await new Promise(r => setTimeout(r, 100));
-    const historyResponse = await fetch(`https://api2.ninja.io/user/${userID}/match-history`)
-    if ((historyResponse.status == 500) || (userID == 'badName') || (username == 'badName')) {
-        history = 'badName';
-    } else if (historyResponse.status != 200) {
-        history = 'invalid';
-    } else{
-        var temp = await historyResponse.json();
-        
-        if (temp['games'].length == 0) {
-            formatted = 'No games found'
-            winRateString = `\`${username}\`'s **Win Rate:** 0% in 0 games`
+        var color, history, pingEm, formatted, userID, winRateString, username = ''
+
+        if (interaction.options.getBoolean('id')) {
+            color = await functions.getAura('ID', interaction.options.getString('name'))
+            userID = interaction.options.getString('name')
+            username = await functions.getProfile('ID', interaction.options.getString('name'))
+            if (username != 'badName') { username = username['name'] }
         } else {
-            winRateString = winRateCalc(username, temp, userID)
-            formatted = historyFormatter(temp, userID)
+            color = await functions.getAura('name', interaction.options.getString('name'))
+            // get only the user's ID
+            userID = await functions.getUserID(interaction.options.getString('name'))
+            username = interaction.options.getString('name')
         }
-    }
+
+        // fetch the user's 1v1 history from https://api2.ninja.io/user/[userID]/match-history
+        await new Promise(r => setTimeout(r, 100));
+        const historyResponse = await fetch(`https://api2.ninja.io/user/${userID}/match-history`)
+        if ((historyResponse.status == 500) || (userID == 'badName') || (username == 'badName')) {
+            history = 'badName';
+        } else if (historyResponse.status != 200) {
+            history = 'invalid';
+        } else {
+            var temp = await historyResponse.json();
+
+            if (temp['games'].length == 0) {
+                formatted = 'No games found'
+                winRateString = `\`${username}\`'s **Win Rate:** 0% in 0 games`
+            } else {
+                winRateString = winRateCalc(username, temp, userID)
+                formatted = historyFormatter(temp, userID)
+            }
+        }
 
 
 
 
-    if (history == 'invalid') {
-        pingEm = new EmbedBuilder()
-            .setColor(interaction.guild.members.me.displayHexColor)
-            .setDescription('Something went critically wrong. Please try again later.')
+        if (history == 'invalid') {
+            pingEm = new EmbedBuilder()
+                .setColor(interaction.guild.members.me.displayHexColor)
+                .setDescription('Something went critically wrong. Please try again later.')
+            await interaction.editReply({ embeds: [pingEm] });
+        } else if (history == 'badName') {
+            pingEm = new EmbedBuilder()
+                .setColor(interaction.guild.members.me.displayHexColor)
+                .setDescription('I could not find a player with that name, please double check your spelling.\nIf you unsure of the spelling, you can try searching for them using </search:1051343380069752909>.')
+            await interaction.editReply({ embeds: [pingEm] });
+        } else {
+            pingEm = new EmbedBuilder()
+                .setColor(color)
+                .setTitle(winRateString)
+                .setDescription(formatted)
+        }
+
+
         await interaction.editReply({ embeds: [pingEm] });
-    } else if (history == 'badName') {
-        pingEm = new EmbedBuilder()
-            .setColor(interaction.guild.members.me.displayHexColor)
-            .setDescription('I could not find a player with that name, please double check your spelling.\nIf you unsure of the spelling, you can try searching for them using </search:1051343380069752909>.')
-        await interaction.editReply({ embeds: [pingEm] });
-    } else {
-        pingEm = new EmbedBuilder()
-            .setColor(color)
-            .setTitle(winRateString)
-            .setDescription(formatted)
-    }
 
-	
-   await interaction.editReply({ embeds: [pingEm]});
-   
-	},
+    },
 };
