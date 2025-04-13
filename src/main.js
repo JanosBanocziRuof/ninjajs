@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Intents, GatewayIntentBits, Events } = require('discord.js');
+const { log } = require('node:console');
 // use dotenv to load the .env file if on linux. start the bot with 'npm run win' on windows, else 'node .'
 if (process.platform == 'linux') { require('dotenv').config() }
 
@@ -83,7 +84,25 @@ for (const file of eventFiles) {
 
 client.on(Events.InteractionCreate, async interaction => {
     // Cooldown shenanigans
+    if (!interaction.isCommand() && !interaction.isAutocomplete()) return;
+
     const command = interaction.client.commands.get(interaction.commandName);
+    if (interaction.isAutocomplete()) {
+        // Skip cooldown logic for autocompletions but continue with the rest of the logic
+        if (!command) {
+            console.error(`No command matching ${interaction.commandName} was found.`);
+            return;
+        }
+
+        try {
+            console.log(`Autocomp command: \x1b[36m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
+            await command.autocomplete(interaction);
+        } catch (error) {
+            console.error(error);
+        }
+        return;
+    }
+
     const { cooldowns } = interaction.client;
 
     if (!cooldowns.has(command.data.name)) {
@@ -120,13 +139,8 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 
     try {
-        if (interaction.isAutocomplete()) {
-            console.log(`Autocomp command: \x1b[36m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
-            await command.autocomplete(interaction);
-        } else {
-            console.log(`Executed command: \x1b[32m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
-            await command.execute(interaction);
-        }
+        console.log(`Executed command: \x1b[32m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
+        await command.execute(interaction);
     } catch (error) {
         console.error(error);
         // await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });

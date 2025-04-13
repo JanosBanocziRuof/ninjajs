@@ -163,7 +163,7 @@ function dhm(ms) {
                     : 'Sometime ago';
 }
 
-const shurikens = "<:GreyShuriken:834903789810745404> <:GreyStarShuriken:834903789836173382> <:RedShuriken:834903789706149929> <:RedStarShuriken:834903789621215302> <:OrangeShuriken:834903789428539490> <:OrangeStarShuriken:834903789668270140> <:YellowShuriken:834903789223673868> <:YellowStarShuriken:834903789751369728> <:GreenShuriken:834903789659095100> <:GreenStarShuriken:834903789604438056> <:BlueShuriken:834903789131530291> <:BlueShuriken:834903789131530291> <:BlueStarShuriken:1063127625536639028> <:PurpleShuriken:834903789156171787> <:PurpleStarShuriken:834903789265747969> <:PinkShuriken:834903789601161256> <:PinkStarShuriken:834903789600899092>".split(" ")
+const shurikens = "<:GreyShuriken:834903789810745404> <:GreyStarShuriken:834903789836173382> <:RedShuriken:834903789706149929> <:RedStarShuriken:834903789621215302> <:OrangeShuriken:834903789428539490> <:OrangeStarShuriken:834903789668270140> <:YellowShuriken:834903789223673868> <:YellowStarShuriken:834903789751369728> <:GreenShuriken:834903789659095100> <:GreenStarShuriken:834903789604438056> <:BlueShuriken:834903789131530291> <:BlueStarShuriken:1063127625536639028> <:PurpleShuriken:834903789156171787> <:PurpleStarShuriken:834903789265747969> <:PinkShuriken:834903789601161256> <:PinkStarShuriken:834903789600899092>".split(" ")
 /**
  * This function converts xp to a level and corresponding shuriken Discord emoji
  * @param {number} xp the xp to convert
