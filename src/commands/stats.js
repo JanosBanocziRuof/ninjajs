@@ -10,7 +10,7 @@ function jsonProfileCruncher(json, killsJson) {
     var currentTopWeapon = 0
     var currentTopKill = 0
     // if killsJson is null, let top weapon be -------
-    if (killsJson == null) {
+    if (killsJson == null || json['kills'] == 0) {
         topWeaponString = '-------'
     } else {
         // finds the "id" of the weapon with the most "kills"
@@ -55,7 +55,7 @@ function jsonProfileCruncher(json, killsJson) {
         topWeaponString = `${weapons[currentTopWeapon]} - ${nf.format(currentTopKill)} kills`
 
     }
-    if (json['clan_id'] != null) { clan = `${json['clan_role']} of ${json['clan_name']}(${json['clan_id']})\n` }
+    if (json['clan_id'] != "") { clan = `${json['clan_role']} of ${json['clan_name']}(${json['clan_id']})\n` }
     return `**Username:** \`${json['name']}\`\n` +
         `**UserID:** ${json['id']}\n` +
         `**Status:** ${json['status']}\n` +
@@ -68,7 +68,8 @@ function jsonProfileCruncher(json, killsJson) {
         `**Flag Captures:** ${nf.format(json['caps'])}\n` +
         `**Title:** ${functions.mapToRankTitles(json['skill'])}\n` +
         `**Skill Points:** ${nf.format(json['skill'])}\n` +
-        `**Skill Rank:** ${nf.format(json['skill_ranking'])}\n` + `**Top Weapon:** ${topWeaponString}\n` +
+        `**Skill Rank:** ${nf.format(json['skill_ranking'])}\n` +
+        `**Top Weapon:** ${topWeaponString}\n` +
         `Created on <t:${Math.floor(new Date(json['created'] + 'Z').getTime() / 1000)}:D>\n` +
         `Last seen <t:${Math.floor(new Date(json['seen'] + 'Z').getTime() / 1000)}:R>\n` +
         `${clan}`
