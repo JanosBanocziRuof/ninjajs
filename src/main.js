@@ -95,7 +95,7 @@ client.on(Events.InteractionCreate, async interaction => {
         }
 
         try {
-            console.log(`Autocomp command: \x1b[36m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
+            console.log(`${new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })} ${new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}.${new Date().getMilliseconds().toString().padStart(3, '0')} - Autocomp command: \x1b[36m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
             await command.autocomplete(interaction);
         } catch (error) {
             console.error(error);
@@ -136,10 +136,8 @@ client.on(Events.InteractionCreate, async interaction => {
     if (!command) {
         console.error(`No command matching ${interaction.commandName} was found.`);
         return;
-    }
-
-    try {
-        console.log(`Executed command: \x1b[32m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
+    } try {
+        console.log(`${new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })} ${new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}.${new Date().getMilliseconds().toString().padStart(3, '0')} - Executed command: \x1b[32m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
         await command.execute(interaction);
     } catch (error) {
         console.error(error);
