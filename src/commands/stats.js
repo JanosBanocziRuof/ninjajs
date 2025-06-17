@@ -68,10 +68,9 @@ function jsonProfileCruncher(json, killsJson) {
         `**Flag Captures:** ${nf.format(json['caps'])}\n` +
         `**Title:** ${functions.mapToRankTitles(json['skill'])}\n` +
         `**Skill Points:** ${nf.format(json['skill'])}\n` +
-        `**Skill Rank:** ${nf.format(json['skill_ranking'])}\n` +
-        `**Top Weapon:** ${topWeaponString}\n` +
-        `Created on <t:${(Date.parse(json['created']) / 1000)}:D>\n` +
-        `Last seen <t:${(Date.parse(json['seen']) / 1000)}:R>\n` +
+        `**Skill Rank:** ${nf.format(json['skill_ranking'])}\n` + `**Top Weapon:** ${topWeaponString}\n` +
+        `Created on <t:${Math.floor(new Date(json['created'] + 'Z').getTime() / 1000)}:D>\n` +
+        `Last seen <t:${Math.floor(new Date(json['seen'] + 'Z').getTime() / 1000)}:R>\n` +
         `${clan}`
 }
 
