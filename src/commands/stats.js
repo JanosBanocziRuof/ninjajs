@@ -56,11 +56,16 @@ function jsonProfileCruncher(json, killsJson) {
 
     }
     if (json['clan_id'] != "") { clan = `${json['clan_role']} of ${json['clan_name']}(${json['clan_id']})\n` }
+    const currentLevel = Math.min(Math.max(Math.floor(.2 * Math.sqrt(json['experience'] / 15.625)), 1), 240);
+    const nextLevel = Math.min(currentLevel + 1, 240);
+    const expForNextLevel = Math.ceil(((nextLevel / 0.2) ** 2) * 15.625);
+    const expNeeded = expForNextLevel - json['experience'];
     return `**Username:** \`${json['name']}\`\n` +
         `**UserID:** ${json['id']}\n` +
         `**Status:** ${json['status']}\n` +
         `**Level:** ${functions.levelMaker(json['experience'])}\n` +
-        `**Exp:** ${nf.format(json['experience'])}\n` +
+        `**Exp:** ${nf.format(json['experience'])} / ${nf.format(expForNextLevel)}\n` +
+        `-# ‎ ‎ ‎ ‎ ‎ • Next lvl: **${nf.format(expNeeded)}**\n` +
         `**Level Rank:** ${nf.format(json['ranking'])}\n` +
         `**Kills:** ${nf.format(json['kills'])}\n` +
         `**Deaths:** ${nf.format(json['deaths'])}\n` +
