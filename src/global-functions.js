@@ -230,5 +230,6 @@ module.exports = {
     mapToRankTitles,
     getClanProfile,
     getClanLeader,
-    getUserID
+    getUserID,
+    shurikens
 }
