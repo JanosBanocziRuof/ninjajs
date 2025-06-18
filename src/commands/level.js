@@ -62,6 +62,7 @@ module.exports = {
                     `# **Name:** \`${profile['name']}\`\n` +
                     `**Level:** ${nf.format(currentLevel)}\n` +
                     `**Shuriken:** ${shurikenEmoji}\n` +
+                    `**Rank:** ${nf.format(profile['ranking'])}\n` +
                     `**Exp:** ${nf.format(profile['experience'])} / ${currentLevel >= 240 ? nf.format(profile['experience']) : nf.format(expForNextLevel)}\n` +
                     `- **Next Lvl:** ${currentLevel >= 240 ? 'Max Level' : nf.format(Math.max(expNeeded, 0))}\n` +
                     `- **Next shuriken:** ${nextShurikenLevel > 240 ? 'N/A' : nf.format(Math.max(expNeededForShuriken, 0))}`
