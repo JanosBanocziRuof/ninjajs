@@ -12,20 +12,26 @@ import('node-fetch').then(module => {
  * @returns                         16645629 if the aura caused problems
  */
 async function getAura(type, NID) {
-    var url = (type == 'name') ? `https://api2.ninja.io/user/profile/${NID}/view-name` : `https://api2.ninja.io/user/profile/${NID}/view`   // turnary operator. if type is name, use the first url, else use the second url 
-    const response = await fetch(url)
-    if (response.status == 500) {
-        return 16645629;
-    } else {
-        const profile = await response.json()
-        const custom = profile['customization']
-        if (Object.getOwnPropertyNames(custom).length != 0) {
-            const orb = custom['orb']['data']
-            if (Object.getOwnPropertyNames(orb).length != 0) {
-                const color = orb['energy']
-                return parseInt(color, 0)
+    try {
+        var url = (type == 'name') ? `https://api2.ninja.io/user/profile/${NID}/view-name` : `https://api2.ninja.io/user/profile/${NID}/view`   // turnary operator. if type is name, use the first url, else use the second url 
+        const response = await fetch(url)
+        if (response.status == 500) {
+            return 16645629;
+        } else {
+            const profile = await response.json()
+            const custom = profile['customization']
+            if (Object.getOwnPropertyNames(custom).length != 0) {
+                const orb = custom['orb']['data']
+                if (Object.getOwnPropertyNames(orb).length != 0) {
+                    const color = orb['energy']
+                    return parseInt(color, 0)
+                } else { return 16645629 }
             } else { return 16645629 }
-        } else { return 16645629 }
+        }
+    } catch (error) {
+        console.error('Error fetching aura:', error);
+        return 16645629; // Default color in case of an error
+
     }
 }
 
