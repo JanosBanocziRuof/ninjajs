@@ -13,7 +13,7 @@ import('node-fetch').then(module => {
  */
 async function getAura(type, NID) {
     try {
-        var url = (type == 'name') ? `https://api2.ninja.io/user/profile/${NID}/view-name` : `https://api2.ninja.io/user/profile/${NID}/view`   // turnary operator. if type is name, use the first url, else use the second url 
+        var url = (type == 'name') ? `https://api2.ninja.io/user/profile/${encodeURIComponent(NID)}/view-name` : `https://api2.ninja.io/user/profile/${NID}/view`   // turnary operator. if type is name, use the first url, else use the second url 
         const response = await fetch(url)
         if (response.status == 500) {
             return 16645629;
@@ -44,7 +44,7 @@ async function getAura(type, NID) {
  * @returns                     'invalid' if the user is not found
  */
 const getProfile = async (type, NID) => {
-    const url = (type == 'name') ? `https://api2.ninja.io/user/profile/${NID}/view-name` : `https://api2.ninja.io/user/profile/${NID}/view`;
+    const url = (type == 'name') ? `https://api2.ninja.io/user/profile/${encodeURIComponent(NID)}/view-name` : `https://api2.ninja.io/user/profile/${NID}/view`;
     const response = await fetch(url);
     return response.status == 500 ? 'badName'   // if the response status is 500, return 'badName'
         : response.status != 200 ? 'invalid'   // if the response status is not 200, return 'invalid'
@@ -207,7 +207,7 @@ const mapToRankTitles = skill => rankTitles[mapSkillToIndex(skill)];
  * @returns             'invalid' if the user is not found
  */
 async function getUserID(name) {
-    url = `https://api2.ninja.io/user/profile/${name}/view-name`
+    url = `https://api2.ninja.io/user/profile/${encodeURIComponent(name)}/view-name`
     const response = await fetch(url)
     if (response.status == 500) {
         console.log('bad name')
