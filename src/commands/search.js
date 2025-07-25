@@ -17,8 +17,8 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply()
         const quary = interaction.options.getString('quary')
-        const userURL = `https://api2.ninja.io/user/search/${quary.replace(/ /g, "")}`
-        const clanURL = `https://api2.ninja.io/clan/search/${quary.replace(/ /g, "%20")}`
+        const userURL = `https://api2.ninja.io/user/search/${encodeURIComponent(quary)}`
+        const clanURL = `https://api2.ninja.io/clan/search/${encodeURIComponent(quary)}`
 
         const userResponse = await fetch(userURL);
         const userData = await userResponse.json();
