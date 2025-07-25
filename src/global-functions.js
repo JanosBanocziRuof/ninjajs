@@ -91,9 +91,16 @@ async function getWeaponStats(ID) {
  * @returns             'invalid' if the clan is not found
  */
 async function getClanID(name) {
-    var url = `https://api2.ninja.io/clan/list`
+    const prohibitedInClanSearchRegex = /[^a-zA-Z0-9_ ]/g;
+
+    var url = `https://api2.ninja.io/clan/search/${encodeURIComponent(name.replace(prohibitedInClanSearchRegex, ''))}`
     const response = await fetch(url)
     r = await response.json()
+
+    if (r['success'] != true || r['clans'] == undefined) {
+        return 'invalid'
+    }
+
     var clans = r['clans']
     var clanID = '0'
     for (i in clans) {
