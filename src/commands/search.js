@@ -16,15 +16,28 @@ module.exports = {
 
     async execute(interaction) {
         await interaction.deferReply()
+
+
+        // removes non allowed char from clanURL
+        const prohibitedInClanSearchRegex = /[^a-zA-Z0-9_ ]/g;
+
         const quary = interaction.options.getString('quary')
-        const userURL = `https://api2.ninja.io/user/search/${quary.replace(/ /g, "")}`
-        const clanURL = `https://api2.ninja.io/clan/search/${quary.replace(/ /g, "%20")}`
+        const userURL = `${functions.apiURLBase}user/search/${encodeURIComponent(quary)}`
+        const clanURL = `${functions.apiURLBase}clan/search/${encodeURIComponent(quary.replace(prohibitedInClanSearchRegex, ''))}`
+        
+        
 
         const userResponse = await fetch(userURL);
         const userData = await userResponse.json();
 
         const clanResponse = await fetch(clanURL);
         const clanData = await clanResponse.json();
+
+        // if encoded url has %20 (a space), set userData['success'] to true
+        if (userData['success'] == false && userURL.includes('%20')) {
+            userData['success'] = true;
+            userData['users'] = [];
+        }
 
         if (userData['success'] != true || clanData['success'] != true) {
             const errorEM = new EmbedBuilder()

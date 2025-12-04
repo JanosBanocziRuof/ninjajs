@@ -4,6 +4,9 @@ import('node-fetch').then(module => {
     fetch = module.default;
 });
 
+const apiURLBase = 'https://api2.ninjabattle.io/';
+const gameBaseURL = 'https://ninjabattle.io/';
+
 /**
  * This function gets the aura color of a user
  * @param {string}          type    specifies if the NID is a name or an ID. Defaults to ID, only uses name when 'name' is passed
@@ -12,20 +15,26 @@ import('node-fetch').then(module => {
  * @returns                         16645629 if the aura caused problems
  */
 async function getAura(type, NID) {
-    var url = (type == 'name') ? `https://api2.ninja.io/user/profile/${NID}/view-name` : `https://api2.ninja.io/user/profile/${NID}/view`   // turnary operator. if type is name, use the first url, else use the second url 
-    const response = await fetch(url)
-    if (response.status == 500) {
-        return 16645629;
-    } else {
-        const profile = await response.json()
-        const custom = profile['customization']
-        if (Object.getOwnPropertyNames(custom).length != 0) {
-            const orb = custom['orb']['data']
-            if (Object.getOwnPropertyNames(orb).length != 0) {
-                const color = orb['energy']
-                return parseInt(color, 0)
+    try {
+        var url = (type == 'name') ? `${apiURLBase}user/profile/${encodeURIComponent(NID)}/view-name` : `${apiURLBase}user/profile/${NID}/view`   // turnary operator. if type is name, use the first url, else use the second url 
+        const response = await fetch(url)
+        if (response.status == 500) {
+            return 16645629;
+        } else {
+            const profile = await response.json()
+            const custom = profile['customization']
+            if (Object.getOwnPropertyNames(custom).length != 0) {
+                const orb = custom['orb']['data']
+                if (Object.getOwnPropertyNames(orb).length != 0) {
+                    const color = orb['energy']
+                    return parseInt(color, 0)
+                } else { return 16645629 }
             } else { return 16645629 }
-        } else { return 16645629 }
+        }
+    } catch (error) {
+        console.error('Error fetching aura:', error);
+        return 16645629; // Default color in case of an error
+
     }
 }
 
@@ -38,7 +47,7 @@ async function getAura(type, NID) {
  * @returns                     'invalid' if the user is not found
  */
 const getProfile = async (type, NID) => {
-    const url = (type == 'name') ? `https://api2.ninja.io/user/profile/${NID}/view-name` : `https://api2.ninja.io/user/profile/${NID}/view`;
+    const url = (type == 'name') ? `${apiURLBase}user/profile/${encodeURIComponent(NID)}/view-name` : `${apiURLBase}user/profile/${NID}/view`;
     const response = await fetch(url);
     return response.status == 500 ? 'badName'   // if the response status is 500, return 'badName'
         : response.status != 200 ? 'invalid'   // if the response status is not 200, return 'invalid'
@@ -52,7 +61,7 @@ const getProfile = async (type, NID) => {
  * @returns             'invalid' if the clan is not found
  */
 async function getClanProfile(NID) {
-    url = `https://api2.ninja.io/clan/${NID}/clan-id`
+    url = `${apiURLBase}clan/${NID}/clan-id`
     const response = await fetch(url)
     const r = await response.json()
     if (response.status == 500) {
@@ -73,7 +82,7 @@ async function getClanProfile(NID) {
  * @returns             'invalid' if the user is not found
  */
 async function getWeaponStats(ID) {
-    var url = `https://api2.ninja.io/user/${ID}/weapon-stats`
+    var url = `${apiURLBase}user/${ID}/weapon-stats`
     const response = await fetch(url)
     return response.status == 500 ? 'invalid' : await response.json();  // if the response status is 500, return 'invalid', else return the json object
 }
@@ -85,9 +94,16 @@ async function getWeaponStats(ID) {
  * @returns             'invalid' if the clan is not found
  */
 async function getClanID(name) {
-    var url = `https://api2.ninja.io/clan/list`
+    const prohibitedInClanSearchRegex = /[^a-zA-Z0-9_ ]/g;
+
+    var url = `${apiURLBase}clan/search/${encodeURIComponent(name.replace(prohibitedInClanSearchRegex, ''))}`
     const response = await fetch(url)
     r = await response.json()
+
+    if (r['success'] != true || r['clans'] == undefined) {
+        return 'invalid'
+    }
+
     var clans = r['clans']
     var clanID = '0'
     for (i in clans) {
@@ -107,7 +123,7 @@ async function getClanID(name) {
  * @returns             the clan members json object
  */
 async function getClanMembers(ID) {
-    var url = `https://api2.ninja.io/clan/${ID}/members`
+    var url = `${apiURLBase}clan/${ID}/members`
     const response = await fetch(url)
     const r = await response.json()
     return r
@@ -134,7 +150,7 @@ function getClanLeader(members) {
  * @returns the game version, as a string
  */
 async function getGameVersion() {
-    var url = 'https://ninja.io'
+    var url = gameBaseURL
     const response = await fetch(url)
     const r = await response.text()
     const l = r.search('./js/dist/game-dev.js?')
@@ -163,7 +179,7 @@ function dhm(ms) {
                     : 'Sometime ago';
 }
 
-const shurikens = "<:GreyShuriken:834903789810745404> <:GreyStarShuriken:834903789836173382> <:RedShuriken:834903789706149929> <:RedStarShuriken:834903789621215302> <:OrangeShuriken:834903789428539490> <:OrangeStarShuriken:834903789668270140> <:YellowShuriken:834903789223673868> <:YellowStarShuriken:834903789751369728> <:GreenShuriken:834903789659095100> <:GreenStarShuriken:834903789604438056> <:BlueShuriken:834903789131530291> <:BlueShuriken:834903789131530291> <:BlueStarShuriken:1063127625536639028> <:PurpleShuriken:834903789156171787> <:PurpleStarShuriken:834903789265747969> <:PinkShuriken:834903789601161256> <:PinkStarShuriken:834903789600899092>".split(" ")
+const shurikens = "<:GreyShuriken:834903789810745404> <:GreyStarShuriken:834903789836173382> <:RedShuriken:834903789706149929> <:RedStarShuriken:834903789621215302> <:OrangeShuriken:834903789428539490> <:OrangeStarShuriken:834903789668270140> <:YellowShuriken:834903789223673868> <:YellowStarShuriken:834903789751369728> <:GreenShuriken:834903789659095100> <:GreenStarShuriken:834903789604438056> <:BlueShuriken:834903789131530291> <:BlueStarShuriken:1063127625536639028> <:PurpleShuriken:834903789156171787> <:PurpleStarShuriken:834903789265747969> <:PinkShuriken:834903789601161256> <:PinkStarShuriken:834903789600899092>".split(" ")
 /**
  * This function converts xp to a level and corresponding shuriken Discord emoji
  * @param {number} xp the xp to convert
@@ -201,7 +217,7 @@ const mapToRankTitles = skill => rankTitles[mapSkillToIndex(skill)];
  * @returns             'invalid' if the user is not found
  */
 async function getUserID(name) {
-    url = `https://api2.ninja.io/user/profile/${name}/view-name`
+    url = `${apiURLBase}user/profile/${encodeURIComponent(name)}/view-name`
     const response = await fetch(url)
     if (response.status == 500) {
         console.log('bad name')
@@ -230,5 +246,8 @@ module.exports = {
     mapToRankTitles,
     getClanProfile,
     getClanLeader,
-    getUserID
+    getUserID,
+    shurikens,
+    gameBaseURL,
+    apiURLBase
 }

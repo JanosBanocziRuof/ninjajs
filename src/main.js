@@ -1,8 +1,9 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Intents, GatewayIntentBits, Events } = require('discord.js');
+const { log } = require('node:console');
 // use dotenv to load the .env file if on linux. start the bot with 'npm run win' on windows, else 'node .'
-if (process.platform == 'linux'){ require('dotenv').config() }
+if (process.platform == 'linux') { require('dotenv').config() }
 
 
 // ###### REMEMBER ######
@@ -13,7 +14,43 @@ if (process.platform == 'linux'){ require('dotenv').config() }
 //        'node ./src/deploy-commands-global.js'
 
 // create a new client instance
-const client  = new Client({intents: [GatewayIntentBits.Guilds]});
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+// Add this near the top of your main bot file
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received. Gracefully shutting down...');
+
+    // Perform cleanup (disconnect from Discord, close database connections, etc.)
+    // For example, if you have a Discord client:
+    if (client && client.destroy) {
+        console.log('Disconnecting from Discord...');
+        client.destroy()
+            .then(() => {
+                console.log('Successfully disconnected from Discord');
+                process.exit(0);
+            })
+            .catch(err => {
+                console.error('Error during discord disconnect:', err);
+                process.exit(1);
+            });
+    } else {
+        console.log('No cleanup needed, exiting');
+        process.exit(0);
+    }
+
+    // Force exit after 5 seconds if cleanup doesn't complete
+    setTimeout(() => {
+        console.log('Forced exit after timeout');
+        process.exit(1);
+    }, 5000);
+});
+
+// You might also want to handle SIGINT for local development
+process.on('SIGINT', () => {
+    console.log('SIGINT received');
+    // Call the same cleanup logic
+    process.emit('SIGTERM');
+});
 
 client.commands = new Collection();
 client.cooldowns = new Collection();
@@ -24,30 +61,48 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-	const filePath = path.join(commandsPath, file);
-	const command = require(filePath);
-	// Set a new item in the Collection with the key as the command name and the value as the exported module
-	if ('data' in command && 'execute' in command) {
-		client.commands.set(command.data.name, command);
-	} else {
-		console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-	}
+    const filePath = path.join(commandsPath, file);
+    const command = require(filePath);
+    // Set a new item in the Collection with the key as the command name and the value as the exported module
+    if ('data' in command && 'execute' in command) {
+        client.commands.set(command.data.name, command);
+    } else {
+        console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+    }
 }
 
 
 for (const file of eventFiles) {
-	const filePath = path.join(eventsPath, file);
-	const event = require(filePath);
-	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args));
-	} else {
-		client.on(event.name, (...args) => event.execute(...args));
-	}
+    const filePath = path.join(eventsPath, file);
+    const event = require(filePath);
+    if (event.once) {
+        client.once(event.name, (...args) => event.execute(...args));
+    } else {
+        client.on(event.name, (...args) => event.execute(...args));
+    }
 }
 
 client.on(Events.InteractionCreate, async interaction => {
     // Cooldown shenanigans
+    if (!interaction.isCommand() && !interaction.isAutocomplete()) return;
+
     const command = interaction.client.commands.get(interaction.commandName);
+    if (interaction.isAutocomplete()) {
+        // Skip cooldown logic for autocompletions but continue with the rest of the logic
+        if (!command) {
+            console.error(`No command matching ${interaction.commandName} was found.`);
+            return;
+        }
+
+        try {
+            console.log(`${new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })} ${new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}.${new Date().getMilliseconds().toString().padStart(3, '0')} - Autocomp command: \x1b[36m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
+            await command.autocomplete(interaction);
+        } catch (error) {
+            console.error(error);
+        }
+        return;
+    }
+
     const { cooldowns } = interaction.client;
 
     if (!cooldowns.has(command.data.name)) {
@@ -78,23 +133,16 @@ client.on(Events.InteractionCreate, async interaction => {
         }
     }
 
-	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
-		return;
-	}
-
-	try {
-		if (interaction.isAutocomplete()) {
-            console.log(`Autocomp command: \x1b[36m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
-			await command.autocomplete(interaction);
-		} else {
-            console.log(`Executed command: \x1b[32m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
-			await command.execute(interaction);
-		}
-	} catch (error) {
-		console.error(error);
-		// await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-	}
+    if (!command) {
+        console.error(`No command matching ${interaction.commandName} was found.`);
+        return;
+    } try {
+        console.log(`${new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })} ${new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}.${new Date().getMilliseconds().toString().padStart(3, '0')} - Executed command: \x1b[32m/${interaction.commandName}\x1b[97m, Author ID: ${interaction.user.id}, Server: ${interaction.guild.name}\n\t\x1b[90mOptions: ${JSON.stringify(interaction.options.data)}\x1b[97m`);
+        await command.execute(interaction);
+    } catch (error) {
+        console.error(error);
+        // await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+    }
 });
 
 // login

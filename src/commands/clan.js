@@ -24,7 +24,9 @@ function overview(data, leader) {
 
 function memberChunks(members) {
     const chunks = []
-    if (members.length < 16) return members
+    if (members.length < 16) {
+        return [members]
+    }
     for (let i = 0; i < members.length; i += 16) {
         chunks.push(members.slice(i, i + 16))
     }
@@ -140,8 +142,7 @@ module.exports = {
                         .setLabel(`View ${clan['clan']['name']}'s Members`)
                         .setDisabled(false)
                 )
-            // FIXME: await interaction.editReply({ embeds: [embed], components: [button]})
-            await interaction.editReply({ embeds: [embed] })
+            await interaction.editReply({ embeds: [embed], components: [button] })
 
             const filter = i => (i.customId == 'members' || i.customId == 'first' || i.customId == 'back' || i.customId == 'forward' || i.customId == 'last' || i.customId == 'stop') && i.user.id === interaction.user.id;
 
