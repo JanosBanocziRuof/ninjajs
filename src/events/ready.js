@@ -8,7 +8,7 @@ module.exports = {
         console.log(`Ready! Logged in as ${client.user.tag}`);
 
         const arrayOfStatus = [
-            `api.ninja.io`,
+            `api2.ninjabattle.io`,
             `/help`,
             `${client.guilds.cache.size} servers`
         ]

@@ -3,6 +3,8 @@ import('node-fetch').then(module => {
     fetch = module.default;
 });
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const functions = require('../global-functions.js')
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,7 +13,7 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply()
         const start = Date.now()
-        await fetch("https://api.ninja.io/")
+        await fetch(functions.apiURLBase)
         const APIping = Date.now() - start
         const pingEm = new EmbedBuilder()
             .setColor(interaction.guild.members.me.displayHexColor)

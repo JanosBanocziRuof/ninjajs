@@ -22,8 +22,8 @@ module.exports = {
         const prohibitedInClanSearchRegex = /[^a-zA-Z0-9_ ]/g;
 
         const quary = interaction.options.getString('quary')
-        const userURL = `https://api2.ninja.io/user/search/${encodeURIComponent(quary)}`
-        const clanURL = `https://api2.ninja.io/clan/search/${encodeURIComponent(quary.replace(prohibitedInClanSearchRegex, ''))}`
+        const userURL = `${functions.apiURLBase}user/search/${encodeURIComponent(quary)}`
+        const clanURL = `${functions.apiURLBase}clan/search/${encodeURIComponent(quary.replace(prohibitedInClanSearchRegex, ''))}`
         
         
 

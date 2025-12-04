@@ -4,6 +4,9 @@ import('node-fetch').then(module => {
     fetch = module.default;
 });
 
+const apiURLBase = 'https://api2.ninjabattle.io/';
+const gameBaseURL = 'https://ninjabattle.io/';
+
 /**
  * This function gets the aura color of a user
  * @param {string}          type    specifies if the NID is a name or an ID. Defaults to ID, only uses name when 'name' is passed
@@ -13,7 +16,7 @@ import('node-fetch').then(module => {
  */
 async function getAura(type, NID) {
     try {
-        var url = (type == 'name') ? `https://api2.ninja.io/user/profile/${encodeURIComponent(NID)}/view-name` : `https://api2.ninja.io/user/profile/${NID}/view`   // turnary operator. if type is name, use the first url, else use the second url 
+        var url = (type == 'name') ? `${apiURLBase}user/profile/${encodeURIComponent(NID)}/view-name` : `${apiURLBase}user/profile/${NID}/view`   // turnary operator. if type is name, use the first url, else use the second url 
         const response = await fetch(url)
         if (response.status == 500) {
             return 16645629;
@@ -44,7 +47,7 @@ async function getAura(type, NID) {
  * @returns                     'invalid' if the user is not found
  */
 const getProfile = async (type, NID) => {
-    const url = (type == 'name') ? `https://api2.ninja.io/user/profile/${encodeURIComponent(NID)}/view-name` : `https://api2.ninja.io/user/profile/${NID}/view`;
+    const url = (type == 'name') ? `${apiURLBase}user/profile/${encodeURIComponent(NID)}/view-name` : `${apiURLBase}user/profile/${NID}/view`;
     const response = await fetch(url);
     return response.status == 500 ? 'badName'   // if the response status is 500, return 'badName'
         : response.status != 200 ? 'invalid'   // if the response status is not 200, return 'invalid'
@@ -58,7 +61,7 @@ const getProfile = async (type, NID) => {
  * @returns             'invalid' if the clan is not found
  */
 async function getClanProfile(NID) {
-    url = `https://api2.ninja.io/clan/${NID}/clan-id`
+    url = `${apiURLBase}clan/${NID}/clan-id`
     const response = await fetch(url)
     const r = await response.json()
     if (response.status == 500) {
@@ -79,7 +82,7 @@ async function getClanProfile(NID) {
  * @returns             'invalid' if the user is not found
  */
 async function getWeaponStats(ID) {
-    var url = `https://api2.ninja.io/user/${ID}/weapon-stats`
+    var url = `${apiURLBase}user/${ID}/weapon-stats`
     const response = await fetch(url)
     return response.status == 500 ? 'invalid' : await response.json();  // if the response status is 500, return 'invalid', else return the json object
 }
@@ -93,7 +96,7 @@ async function getWeaponStats(ID) {
 async function getClanID(name) {
     const prohibitedInClanSearchRegex = /[^a-zA-Z0-9_ ]/g;
 
-    var url = `https://api2.ninja.io/clan/search/${encodeURIComponent(name.replace(prohibitedInClanSearchRegex, ''))}`
+    var url = `${apiURLBase}clan/search/${encodeURIComponent(name.replace(prohibitedInClanSearchRegex, ''))}`
     const response = await fetch(url)
     r = await response.json()
 
@@ -120,7 +123,7 @@ async function getClanID(name) {
  * @returns             the clan members json object
  */
 async function getClanMembers(ID) {
-    var url = `https://api2.ninja.io/clan/${ID}/members`
+    var url = `${apiURLBase}clan/${ID}/members`
     const response = await fetch(url)
     const r = await response.json()
     return r
@@ -147,7 +150,7 @@ function getClanLeader(members) {
  * @returns the game version, as a string
  */
 async function getGameVersion() {
-    var url = 'https://ninja.io'
+    var url = gameBaseURL
     const response = await fetch(url)
     const r = await response.text()
     const l = r.search('./js/dist/game-dev.js?')
@@ -214,7 +217,7 @@ const mapToRankTitles = skill => rankTitles[mapSkillToIndex(skill)];
  * @returns             'invalid' if the user is not found
  */
 async function getUserID(name) {
-    url = `https://api2.ninja.io/user/profile/${encodeURIComponent(name)}/view-name`
+    url = `${apiURLBase}user/profile/${encodeURIComponent(name)}/view-name`
     const response = await fetch(url)
     if (response.status == 500) {
         console.log('bad name')
@@ -244,5 +247,7 @@ module.exports = {
     getClanProfile,
     getClanLeader,
     getUserID,
-    shurikens
+    shurikens,
+    gameBaseURL,
+    apiURLBase
 }

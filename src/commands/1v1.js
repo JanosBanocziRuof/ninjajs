@@ -142,9 +142,9 @@ module.exports = {
             username = interaction.options.getString('name')
         }
 
-        // fetch the user's 1v1 history from https://api2.ninja.io/user/[userID]/match-history
+        // fetch the user's 1v1 history from api_base/user/[userID]/match-history
         await new Promise(r => setTimeout(r, 100));
-        const historyResponse = await fetch(`https://api2.ninja.io/user/${userID}/match-history`)
+        const historyResponse = await fetch(`${functions.apiURLBase}user/${userID}/match-history`)
         if ((historyResponse.status == 500) || (userID == 'badName') || (username == 'badName')) {
             history = 'badName';
         } else if (historyResponse.status != 200) {
